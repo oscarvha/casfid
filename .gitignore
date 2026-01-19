@@ -1,0 +1,19 @@
+
+###> symfony/framework-bundle ###
+# Environment files
+.env
+.env.*
+/config/secrets/prod/prod.decrypt.private.php
+/public/bundles/
+/var/
+/vendor/
+###< symfony/framework-bundle ###
+
+###> phpunit/phpunit ###
+/phpunit.xml
+/.phpunit.cache/
+###< phpunit/phpunit ###
+
+### IDEA CONFIG
+.idea/
+.editorconfig
