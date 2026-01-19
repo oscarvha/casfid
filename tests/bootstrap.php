@@ -4,10 +4,15 @@ use Symfony\Component\Dotenv\Dotenv;
 
 require dirname(__DIR__).'/vendor/autoload.php';
 
-$envFile = dirname(__DIR__).'/.env';
+$projectDir = dirname(__DIR__);
+$env = $_SERVER['APP_ENV'] ?? 'test';
 
-if (method_exists(Dotenv::class, 'bootEnv') && file_exists($envFile)) {
-    (new Dotenv())->bootEnv($envFile);
+$dotenv = new Dotenv();
+
+if ($env === 'test' && file_exists($projectDir.'/.env.test')) {
+    $dotenv->load($projectDir.'/.env.test');
+} elseif (file_exists($projectDir.'/.env')) {
+    $dotenv->load($projectDir.'/.env');
 }
 
 if ($_SERVER['APP_DEBUG'] ?? false) {
