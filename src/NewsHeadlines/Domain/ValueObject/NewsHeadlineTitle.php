@@ -2,9 +2,9 @@
 
 namespace App\NewsHeadlines\Domain\ValueObject;
 
-use App\NewsHeadlines\Domain\Exception\InvalidNewsHeadlineId;
+use App\NewsHeadlines\Domain\Exception\InvalidNewsHeadlineTitle;
 
-final readonly class NewsHeadlineId
+final readonly class NewsHeadlineTitle
 {
     /**
      * @var string
@@ -28,13 +28,14 @@ final readonly class NewsHeadlineId
         return $this->value;
     }
 
+
     /**
-     * @param NewsHeadlineId $other
+     * @param NewsHeadlineTitle $t2
      * @return bool
      */
-    public function equals(self $other): bool
+    public function equals(NewsHeadlineTitle $t2): bool
     {
-        return $this->value === $other->value;
+        return $this->toString() === $t2->toString();
     }
 
     /**
@@ -44,10 +45,13 @@ final readonly class NewsHeadlineId
     public static function fromString(string $value): self
     {
         if ($value === '') {
-            throw new InvalidNewsHeadlineId('NewsHeadlineId cannot be empty');
+            throw new InvalidNewsHeadlineTitle('HeadlineTitle cannot be empty');
+        }
+
+        if (mb_strlen($value) > 255) {
+            throw new InvalidNewsHeadlineTitle('HeadlineTitle cannot be longer than 255 characters');
         }
 
         return new self($value);
     }
-
 }

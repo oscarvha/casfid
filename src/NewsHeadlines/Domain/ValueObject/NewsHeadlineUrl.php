@@ -2,9 +2,9 @@
 
 namespace App\NewsHeadlines\Domain\ValueObject;
 
-use App\NewsHeadlines\Domain\Exception\InvalidNewsHeadlineId;
+use App\NewsHeadlines\Domain\Exception\InvalidNewsHeadlineUrl;
 
-final readonly class NewsHeadlineId
+final readonly class NewsHeadlineUrl
 {
     /**
      * @var string
@@ -29,25 +29,15 @@ final readonly class NewsHeadlineId
     }
 
     /**
-     * @param NewsHeadlineId $other
-     * @return bool
-     */
-    public function equals(self $other): bool
-    {
-        return $this->value === $other->value;
-    }
-
-    /**
      * @param string $value
      * @return self
      */
     public static function fromString(string $value): self
     {
-        if ($value === '') {
-            throw new InvalidNewsHeadlineId('NewsHeadlineId cannot be empty');
+        if (!filter_var($value, FILTER_VALIDATE_URL)) {
+            throw new InvalidNewsHeadlineUrl('HeadlineUrl must be a valid URL');
         }
 
         return new self($value);
     }
-
 }

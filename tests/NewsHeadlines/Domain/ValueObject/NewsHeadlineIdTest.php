@@ -2,10 +2,11 @@
 
 namespace App\Tests\NewsHeadlines\Domain\ValueObject;
 
+use App\NewsHeadlines\Domain\Exception\InvalidNewsHeadlineId;
 use App\NewsHeadlines\Domain\ValueObject\NewsHeadlineId;
 use PHPUnit\Framework\TestCase;
 
-class NewsHeadlineIdTest extends TestCase
+final class NewsHeadlineIdTest extends TestCase
 {
     public function test_it_can_be_created_with_valid_value(): void
     {
@@ -19,7 +20,7 @@ class NewsHeadlineIdTest extends TestCase
 
     public function test_it_throws_exception_when_value_is_empty(): void
     {
-        $this->expectException(\InvalidArgumentException::class);
+        $this->expectException(InvalidNewsHeadlineId::class);
 
         NewsHeadlineId::fromString('');
     }
