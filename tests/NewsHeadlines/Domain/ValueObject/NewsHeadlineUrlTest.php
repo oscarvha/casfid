@@ -14,7 +14,7 @@ final class NewsHeadlineUrlTest extends TestCase
 
         $headlineUrl = NewsHeadlineUrl::fromString($url);
 
-        $this->assertSame($url, $headlineUrl->toString());
+        $this->assertSame($url, $headlineUrl->__toString());
     }
 
     public function test_it_throws_exception_for_invalid_url(): void

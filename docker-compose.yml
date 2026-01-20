@@ -24,6 +24,8 @@ services:
         environment:
             MYSQL_ROOT_PASSWORD: password
             MYSQL_DATABASE: casfid_technical_test
+            MYSQL_USER: dailytrends
+            MYSQL_PASSWORD: dailytrends_password
         volumes:
             - mysqlbdata_casfid_technical_test:/var/lib/mysql
 

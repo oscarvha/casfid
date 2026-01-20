@@ -23,7 +23,7 @@ final readonly class NewsHeadlineId
     /**
      * @return string
      */
-    public function toString(): string
+    public function __toString(): string
     {
         return $this->value;
     }

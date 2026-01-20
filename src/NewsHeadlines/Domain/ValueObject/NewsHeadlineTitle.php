@@ -23,7 +23,7 @@ final readonly class NewsHeadlineTitle
     /**
      * @return string
      */
-    public function toString(): string
+    public function __toString(): string
     {
         return $this->value;
     }
@@ -35,7 +35,7 @@ final readonly class NewsHeadlineTitle
      */
     public function equals(NewsHeadlineTitle $t2): bool
     {
-        return $this->toString() === $t2->toString();
+        return $this->__toString() === $t2->__toString();
     }
 
     /**

@@ -12,7 +12,7 @@ final class NewsHeadlineTitleTest extends TestCase
     {
         $title = NewsHeadlineTitle::fromString('This is a valid headline');
 
-        $this->assertSame('This is a valid headline', $title->toString());
+        $this->assertSame('This is a valid headline', $title->__toString());
     }
 
     public function test_it_throws_exception_when_title_is_empty(): void
