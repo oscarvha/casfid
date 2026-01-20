@@ -1,0 +1,57 @@
+openapi: 3.0.3
+
+info:
+    title: News Feed API
+    version: 1.0.0
+    description: Technical test API
+
+servers:
+    - url: http://localhost:8890
+      description: Local development
+
+components:
+    securitySchemes:
+        ApiTokenAuth:
+            type: http
+            scheme: bearer
+            bearerFormat: API_TOKEN
+
+security:
+    - ApiTokenAuth: []
+
+paths:
+    /api/auth/check:
+        get:
+            summary: Check API authentication token
+            tags:
+                - Authentication
+            description: Validates the API token sent via Authorization header.
+            security:
+                - ApiTokenAuth: []
+            responses:
+                '200':
+                    description: Token is valid
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    authenticated:
+                                        type: boolean
+                                        example: true
+                                    message:
+                                        type: string
+                                        example: The API token is valid.
+                '401':
+                    description: Unauthorized
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    error:
+                                        type: string
+                                        example: Unauthorized
+                                    message:
+                                        type: string
+                                        example: Authentication required
