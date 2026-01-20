@@ -1,7 +1,4 @@
 <?php
-
-declare(strict_types=1);
-
 namespace App\NewsHeadlines\Infrastructure\Persistence\Doctrine;
 
 use App\NewsHeadlines\Domain\Collection\NewsHeadlineCollection;

@@ -11,7 +11,7 @@ use DateTimeImmutable;
 /**
  *
  */
-final readonly class NewsHeadline
+class NewsHeadline
 {
     /**
      * @param NewsHeadlineId $id
