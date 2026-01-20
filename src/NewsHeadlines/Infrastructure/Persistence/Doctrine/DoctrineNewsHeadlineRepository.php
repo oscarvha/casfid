@@ -19,15 +19,8 @@ final class DoctrineNewsHeadlineRepository implements NewsHeadlineRepository
     ) {
         $this->repository = $this->entityManager->getRepository(NewsHeadline::class);
     }
-
-    public function save(NewsHeadline $headline): void
-    {
-        $this->entityManager->persist($headline);
-        $this->entityManager->flush();
-    }
-
     /**
-     * @param NewsHeadlineCollection $headlines
+     * @param NewsHeadlineCollection $collection
      */
     public function saveNewOnly(NewsHeadlineCollection $collection): void
     {
@@ -43,15 +36,7 @@ final class DoctrineNewsHeadlineRepository implements NewsHeadlineRepository
         $this->entityManager->flush();
     }
 
-    /**
-     * @return NewsHeadline[]
-     */
-    public function searchAll(): array
-    {
-        return $this->repository->findAll();
-    }
-
-    public function existsByUrl(string $url): bool
+    private function existsByUrl(string $url): bool
     {
         return $this->repository->count(['url' => $url]) > 0;
     }
