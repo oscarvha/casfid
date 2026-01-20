@@ -5,6 +5,7 @@ namespace App\NewsHeadlines\Infrastructure\Scrapper;
 use App\NewsHeadlines\Domain\Collection\NewsHeadlineCollection;
 use App\NewsHeadlines\Domain\Exception\NewsScrapingFailed;
 use App\NewsHeadlines\Domain\Model\NewsHeadline;
+use App\NewsHeadlines\Domain\Port\NewsHeadlineIdGenerator;
 use App\NewsHeadlines\Domain\Scrapper\NewsScraper;
 use App\NewsHeadlines\Domain\ValueObject\NewsHeadlineId;
 use App\NewsHeadlines\Domain\ValueObject\NewsHeadlineSource;
@@ -23,7 +24,8 @@ final class ElMundoScraper implements NewsScraper
     private const HEADLINE_SELECTOR = 'div.ue-l-cg__body:nth-of-type(2) article a > h2.ue-c-cover-content__headline';
 
     public function __construct(
-        private readonly HttpClientInterface $client
+        private readonly HttpClientInterface $client,
+        private NewsHeadlineIdGenerator $idGenerator
     ) {}
 
     /**
@@ -44,7 +46,6 @@ final class ElMundoScraper implements NewsScraper
             $html = $response->getContent();
 
             $crawler = new Crawler($html);
-
             $blocks = $crawler->filter('div.ue-l-cg__body');
 
             if ($blocks->count() < 2) {
@@ -52,42 +53,46 @@ final class ElMundoScraper implements NewsScraper
             }
 
             $headlines = [];
-            $editorialBlock = $blocks->eq(2);
 
-            foreach ($editorialBlock->filter('article a > h2.ue-c-cover-content__headline') as $headlineNode) {
-                if (count($headlines) === 10) {
-                    break;
+            for ($i = 2; $i < $blocks->count(); $i++) {
+                $block = $blocks->eq($i);
+
+                foreach ($block->filter('article a > h2.ue-c-cover-content__headline') as $headlineNode) {
+                    if (count($headlines) === 10) {
+                        break 2;
+                    }
+
+                    $title = trim($headlineNode->textContent);
+                    $a = $headlineNode->parentNode;
+                    $url = $a->getAttribute('href');
+
+                    if ($title === '' || $url === '') {
+                        continue;
+                    }
+
+                    if (str_starts_with($url, '/')) {
+                        $url = 'https://www.elmundo.es' . $url;
+                    }
+
+                    $headlines[] = NewsHeadline::create(
+                        $this->idGenerator->generate(),
+                        $this->source(),
+                        NewsHeadlineTitle::fromString($title),
+                        NewsHeadlineUrl::fromString($url),
+                        count($headlines) + 1,
+                        new \DateTimeImmutable()
+                    );
                 }
-
-                $title = trim($headlineNode->textContent);
-                $a = $headlineNode->parentNode;
-                $url = $a->getAttribute('href');
-
-                if ($title === '' || $url === '') {
-                    continue;
-                }
-
-                if (str_starts_with($url, '/')) {
-                    $url = 'https://www.elmundo.es' . $url;
-                }
-
-                $headlines[] = NewsHeadline::create(
-                    NewsHeadlineId::fromString(uniqid('elmundo-', true)),
-                    $this->source(),
-                    NewsHeadlineTitle::fromString($title),
-                    NewsHeadlineUrl::fromString($url),
-                    count($headlines) + 1,
-                    new \DateTimeImmutable()
-                );
             }
 
             return NewsHeadlineCollection::fromArray($headlines);
 
-        } catch (\Throwable $e) {
+        }catch(\Throwable $e) {
             throw new NewsScrapingFailed(
                 'Failed scraping headlines from El Mundo',
                 previous: $e
             );
         }
+
     }
 }

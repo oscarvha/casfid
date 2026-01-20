@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Tests\NewsHeadlines\infraestructure\Scrapper;
+namespace App\Tests\NewsHeadlines\Infrastructure\Scrapper;
 
 use App\NewsHeadlines\Domain\Exception\NewsScrapingFailed;
 use App\NewsHeadlines\Infrastructure\Scrapper\ElMundoScraper;

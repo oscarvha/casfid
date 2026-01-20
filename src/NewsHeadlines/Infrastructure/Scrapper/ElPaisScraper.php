@@ -5,17 +5,13 @@ namespace App\NewsHeadlines\Infrastructure\Scrapper;
 use App\NewsHeadlines\Domain\Collection\NewsHeadlineCollection;
 use App\NewsHeadlines\Domain\Exception\NewsScrapingFailed;
 use App\NewsHeadlines\Domain\Model\NewsHeadline;
+use App\NewsHeadlines\Domain\Port\NewsHeadlineIdGenerator;
 use App\NewsHeadlines\Domain\Scrapper\NewsScraper;
 use App\NewsHeadlines\Domain\ValueObject\NewsHeadlineId;
 use App\NewsHeadlines\Domain\ValueObject\NewsHeadlineSource;
 use App\NewsHeadlines\Domain\ValueObject\NewsHeadlineTitle;
 use App\NewsHeadlines\Domain\ValueObject\NewsHeadlineUrl;
 use Symfony\Component\DomCrawler\Crawler;
-use Symfony\Component\HttpClient\HttpClient;
-use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
-use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
-use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
-use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 final class ElPaisScraper implements NewsScraper
@@ -24,7 +20,8 @@ final class ElPaisScraper implements NewsScraper
     private const HEADLINE_SELECTOR = 'article h2 a';
 
     public function __construct(
-        private readonly HttpClientInterface $client
+        private readonly HttpClientInterface $client,
+        private NewsHeadlineIdGenerator $idGenerator
     ) {}
 
     /**
@@ -64,7 +61,7 @@ final class ElPaisScraper implements NewsScraper
                 }
 
                 $headlines[] = NewsHeadline::create(
-                    NewsHeadlineId::fromString(random_bytes(16)),
+                    $this->idGenerator->generate(),
                     $this->source(),
                     NewsHeadlineTitle::fromString($title),
                     NewsHeadlineUrl::fromString($url),

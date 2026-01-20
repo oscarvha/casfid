@@ -29,53 +29,24 @@ final readonly class NewsHeadline
         private int                        $position,
         private DateTimeImmutable          $scrapedAt
     ) {}
-
-    /**
-     * @return NewsHeadlineSource
-     */
-    public function source(): NewsHeadlineSource
+    public function id(): string
     {
-        return $this->source;
+        return $this->id->__toString();
     }
 
-    /**
-     * @return NewsHeadlineTitle
-     */
-    public function title(): NewsHeadlineTitle
+    public function source(): string
     {
-        return $this->title;
+        return $this->source->__toString();
     }
 
-    /**
-     * @return NewsHeadlineUrl
-     */
-    public function url(): NewsHeadlineUrl
+    public function title(): string
     {
-        return $this->url;
+        return $this->title->__toString();
     }
 
-    /**
-     * @return int
-     */
-    public function position(): int
+    public function url(): string
     {
-        return $this->position;
-    }
-
-    /**
-     * @return DateTimeImmutable
-     */
-    public function scrapedAt(): DateTimeImmutable
-    {
-        return $this->scrapedAt;
-    }
-
-    /**
-     * @return NewsHeadlineId
-     */
-    public function id(): NewsHeadlineId
-    {
-        return $this->id;
+        return $this->url->__toString();
     }
 
     /**
@@ -97,4 +68,6 @@ final readonly class NewsHeadline
     ): self {
         return new self($id, $source, $title, $url, $position, $scrapedAt);
     }
+
+
 }

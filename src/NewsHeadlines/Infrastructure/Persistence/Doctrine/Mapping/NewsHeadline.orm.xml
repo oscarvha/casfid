@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<doctrine-mapping
+    xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="
+        http://doctrine-project.org/schemas/orm/doctrine-mapping
+        https://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+
+    <entity
+        name="App\NewsHeadlines\Domain\Model\NewsHeadline"
+        table="news_headlines"
+    >
+        <id name="id" type="string" length="36" />
+        <field name="source" length="50" />
+        <field name="title"  length="255" />
+        <field name="url"  length="255" unique="true" />
+        <field name="position" type="integer" />
+        <field name="scrapedAt" type="datetime_immutable" />
+    </entity>
+
+</doctrine-mapping>
