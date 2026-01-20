@@ -15,7 +15,7 @@ class NewsHeadlineCollectionTest extends TestCase
     private function headline(int $position = 1): NewsHeadline
     {
         return NewsHeadline::create(
-            NewsHeadlineId::fromString(uniqid('id-', true)),
+            NewsHeadlineId::fromString(bin2hex(random_bytes(16))),
             NewsHeadlineSource::elPais(),
             NewsHeadlineTitle::fromString('Some title'),
             NewsHeadlineUrl::fromString('https://example.com/news'),
@@ -87,5 +87,23 @@ class NewsHeadlineCollectionTest extends TestCase
         $collection->take(1);
 
         $this->assertCount(3, iterator_to_array($collection));
+    }
+
+    public function test_it_can_merge_two_collections(): void
+    {
+        $collection1 = NewsHeadlineCollection::fromArray([
+            $this->headline(),
+            $this->headline(),
+        ]);
+
+        $collection2 = NewsHeadlineCollection::fromArray([
+            $this->headline(),
+            $this->headline(),
+            $this->headline(),
+        ]);
+
+        $merged = $collection1->merge($collection2);
+
+        $this->assertCount(5, iterator_to_array($merged));
     }
 }
