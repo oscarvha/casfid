@@ -61,7 +61,3 @@ services:
     App\Shared\Security\Infrastructure\Api\Symfony\ApiTokenAuthenticator:
         arguments:
             $apiToken: '%env(API_AUTH_TOKEN)%'
-
-    App\Shared\Api\Infrastructure\EventListener\ApiExceptionListener:
-        tags:
-            - { name: kernel.event_listener, event: kernel.exception }

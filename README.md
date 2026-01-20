@@ -94,9 +94,31 @@ Presta especial atención al control de errores, al desacoplamiento y con la vis
 - Comparte el enlace con el equipo técnico de **CASFID**.
 
 ---
+## Architecture & Design Decisions
 
-¡Buena suerte!
+### Cursor-based pagination
 
-Esperamos que disfrutes el reto y lo uses como una oportunidad para mostrar tu manera de trabajar, tu estilo de código y tu pensamiento técnico.
+A cursor-based pagination approach has been chosen for the feeds endpoint.
 
-¡Gracias por tu interés en **CASFID**!
+While this decision may be considered overkill for the current scope of the project, it provides a more robust and scalable solution in case the dataset grows significantly. Cursor-based pagination avoids common issues of offset-based pagination such as duplicated or missing records when new items are inserted.
+
+This approach ensures stable pagination and better performance for large datasets.
+
+---
+
+### Doctrine mapping without custom Types
+
+Doctrine custom Types were intentionally not used for domain Value Objects.
+
+Instead, persistence relies on:
+- Primitive database types
+- Getter methods on the domain model returning scalar values
+- `__toString()` implementations in Value Objects
+
+This decision implies a minor compromise in strict DDD separation between layers, but it was made consciously for the following reasons:
+
+1. At the current stage of the project, there is no domain logic that requires operating directly on the Value Objects outside the aggregate.
+2. Using `__toString()` is a common and accepted practice for Value Objects based on a single primitive value (such as strings), keeping the implementation simple and readable.
+3. This approach reduces Doctrine configuration complexity while maintaining a clear and expressive domain model.
+
+This decision can be revisited in the future if the domain evolves and requires richer Value Object behavior.

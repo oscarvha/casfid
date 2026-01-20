@@ -3,3 +3,9 @@ shared:
         path: ../src/Shared
         namespace: App\Shared
     type: attribute
+
+news_headlines:
+    resource:
+        path: ../src/NewsHeadlines
+        namespace: App\NewsHeadlines
+    type: attribute
