@@ -3,6 +3,8 @@
 namespace App\Tests\NewsHeadlines\Infrastructure\Scrapper;
 
 use App\NewsHeadlines\Domain\Exception\NewsScrapingFailed;
+use App\NewsHeadlines\Domain\Port\NewsHeadlineIdGenerator;
+use App\NewsHeadlines\Domain\ValueObject\NewsHeadlineId;
 use App\NewsHeadlines\Infrastructure\Scrapper\ElMundoScraper;
 use PHPUnit\Framework\TestCase;
 use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
@@ -25,11 +27,7 @@ final class ElMundoScraperTest extends TestCase
         $response = $this->createStub(ResponseInterface::class);
         $response
             ->method('getContent')
-            ->willReturnCallback(
-                static function () use ($html): string {
-                    return $html;
-                }
-            );
+            ->willReturn($html);
 
         $client = $this->createStub(HttpClientInterface::class);
         $client
@@ -37,10 +35,17 @@ final class ElMundoScraperTest extends TestCase
             ->with('GET', 'https://www.elmundo.es/')
             ->willReturn($response);
 
-        $scraper = new ElMundoScraper($client);
+
+        $idGenerator = $this->createStub(NewsHeadlineIdGenerator::class);
+        $idGenerator
+            ->method('generate')
+            ->willReturnCallback(
+                static fn () => NewsHeadlineId::fromString(uniqid('elmundo-', true))
+            );
+
+        $scraper = new ElMundoScraper($client, $idGenerator);
 
         $collection = $scraper->scrapeTopHeadlines();
-
         $items = iterator_to_array($collection);
 
         $this->assertIsArray($items);
@@ -56,7 +61,15 @@ final class ElMundoScraperTest extends TestCase
             ->method('request')
             ->willThrowException($exception);
 
-        $scraper = new ElMundoScraper($client);
+
+        $idGenerator = $this->createStub(NewsHeadlineIdGenerator::class);
+        $idGenerator
+            ->method('generate')
+            ->willReturnCallback(
+                static fn () => NewsHeadlineId::fromString(uniqid('elmundo-', true))
+            );
+
+        $scraper = new ElMundoScraper($client,$idGenerator);
 
         $this->expectException(NewsScrapingFailed::class);
 

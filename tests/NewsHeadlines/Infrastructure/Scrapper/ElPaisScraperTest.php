@@ -3,6 +3,7 @@
 namespace App\Tests\NewsHeadlines\Infrastructure\Scrapper;
 
 use App\NewsHeadlines\Domain\Exception\NewsScrapingFailed;
+use App\NewsHeadlines\Domain\Port\NewsHeadlineIdGenerator;
 use App\NewsHeadlines\Infrastructure\Scrapper\ElPaisScraper;
 use PHPUnit\Framework\TestCase;
 use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
@@ -37,7 +38,15 @@ final class ElPaisScraperTest extends TestCase
             ->with('GET', 'https://elpais.com/')
             ->willReturn($response);
 
-        $scraper = new ElPaisScraper($client);
+
+        $idGenerator = $this->createStub(NewsHeadlineIdGenerator::class);
+        $idGenerator
+            ->method('generate')
+            ->willReturnCallback(
+                static fn () => \App\NewsHeadlines\Domain\ValueObject\NewsHeadlineId::fromString(uniqid('elpais-', true))
+            );
+
+        $scraper = new ElPaisScraper($client,$idGenerator);
 
         $collection = $scraper->scrapeTopHeadlines();
 
@@ -56,7 +65,14 @@ final class ElPaisScraperTest extends TestCase
             ->method('request')
             ->willThrowException($exception);
 
-        $scraper = new ElPaisScraper($client);
+        $idGenerator = $this->createStub(NewsHeadlineIdGenerator::class);
+        $idGenerator
+            ->method('generate')
+            ->willReturnCallback(
+                static fn () => \App\NewsHeadlines\Domain\ValueObject\NewsHeadlineId::fromString(uniqid('elpais-', true))
+            );
+
+        $scraper = new ElPaisScraper($client,$idGenerator);
 
         $this->expectException(NewsScrapingFailed::class);
 
