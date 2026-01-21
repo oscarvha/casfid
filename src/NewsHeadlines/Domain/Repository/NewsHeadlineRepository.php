@@ -3,6 +3,7 @@
 namespace App\NewsHeadlines\Domain\Repository;
 
 use App\NewsHeadlines\Domain\Collection\NewsHeadlineCollection;
+use App\NewsHeadlines\Domain\Model\NewsHeadline;
 
 interface NewsHeadlineRepository
 {
@@ -18,4 +19,10 @@ interface NewsHeadlineRepository
      * @return NewsHeadlineCollection
      */
     public function findPaginated(int $limit, ?string $cursor): NewsHeadlineCollection;
+
+    /**
+     * @param string $id
+     * @return NewsHeadline|null
+     */
+    public function findById(string $id): ?NewsHeadline;
 }

@@ -9,6 +9,7 @@ use App\NewsHeadlines\Domain\ValueObject\NewsHeadlineSource;
 use App\NewsHeadlines\Domain\ValueObject\NewsHeadlineTitle;
 use App\NewsHeadlines\Domain\ValueObject\NewsHeadlineUrl;
 use DateTimeImmutable;
+use Doctrine\ORM\AbstractQuery;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
 
@@ -95,5 +96,34 @@ final class DoctrineNewsHeadlineRepository implements NewsHeadlineRepository
         }
 
         return NewsHeadlineCollection::fromArray($headlines);
+    }
+
+    /**
+     * @param string $id
+     * @return NewsHeadline|null
+     */
+    public function findById(string $id): ?NewsHeadline
+    {
+        $row = $this->entityManager
+            ->createQueryBuilder()
+            ->select('n')
+            ->from(NewsHeadline::class, 'n')
+            ->where('n.id = :id')
+            ->setParameter('id', $id)
+            ->getQuery()
+            ->getOneOrNullResult(AbstractQuery::HYDRATE_ARRAY);
+
+        if ($row === null) {
+            return null;
+        }
+
+        return NewsHeadline::create(
+            NewsHeadlineId::fromString($row['id']),
+            NewsHeadlineSource::fromString($row['source']),
+            NewsHeadlineTitle::fromString($row['title']),
+            NewsHeadlineUrl::fromString($row['url']),
+            (int) $row['position'],
+            $row['scrapedAt']
+        );
     }
 }
