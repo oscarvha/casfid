@@ -4,6 +4,7 @@ namespace App\NewsHeadlines\Domain\Repository;
 
 use App\NewsHeadlines\Domain\Collection\NewsHeadlineCollection;
 use App\NewsHeadlines\Domain\Model\NewsHeadline;
+use DateTimeImmutable;
 
 interface NewsHeadlineRepository
 {
@@ -15,10 +16,11 @@ interface NewsHeadlineRepository
 
     /**
      * @param int $limit
-     * @param string|null $cursor
+     * @param DateTimeImmutable|null $cursorCreatedAt
+     * @param string|null $cursorId
      * @return NewsHeadlineCollection
      */
-    public function findPaginated(int $limit, ?string $cursor): NewsHeadlineCollection;
+    public function findPaginated(int $limit, ?DateTimeImmutable $cursorCreatedAt, ?string $cursorId): NewsHeadlineCollection;
 
     /**
      * @param string $id

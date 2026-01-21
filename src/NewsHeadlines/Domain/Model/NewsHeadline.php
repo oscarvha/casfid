@@ -20,6 +20,7 @@ final readonly class NewsHeadline
      * @param NewsHeadlineUrl $url
      * @param int $position
      * @param DateTimeImmutable $scrapedAt
+     * @param DateTimeImmutable $createdAt
      */
     private function __construct(
         private NewsHeadlineId             $id,
@@ -27,36 +28,64 @@ final readonly class NewsHeadline
         private NewsHeadlineTitle          $title,
         private NewsHeadlineUrl            $url,
         private int                        $position,
-        private DateTimeImmutable          $scrapedAt
+        private DateTimeImmutable          $scrapedAt,
+        private DateTimeImmutable          $createdAt
     ) {}
+
+    /**
+     * @return string
+     */
     public function id(): string
     {
         return $this->id->__toString();
     }
 
+    /**
+     * @return string
+     */
     public function source(): string
     {
         return $this->source->__toString();
     }
 
+    /**
+     * @return string
+     */
     public function title(): string
     {
         return $this->title->__toString();
     }
 
+    /**
+     * @return string
+     */
     public function url(): string
     {
         return $this->url->__toString();
     }
 
+    /**
+     * @return int
+     */
     public function position(): int
     {
         return $this->position;
     }
 
+    /**
+     * @return DateTimeImmutable
+     */
     public function scrapedAt(): DateTimeImmutable
     {
         return $this->scrapedAt;
+    }
+
+    /**
+     * @return DateTimeImmutable
+     */
+    public function createdAt(): DateTimeImmutable
+    {
+        return $this->createdAt;
     }
 
     /**
@@ -66,6 +95,7 @@ final readonly class NewsHeadline
      * @param NewsHeadlineUrl $url
      * @param int $position
      * @param DateTimeImmutable $scrapedAt
+     * @param DateTimeImmutable|null $createdAt
      * @return self
      */
     public static function create(
@@ -74,9 +104,10 @@ final readonly class NewsHeadline
         NewsHeadlineTitle  $title,
         NewsHeadlineUrl    $url,
         int                $position,
-        DateTimeImmutable  $scrapedAt
+        DateTimeImmutable  $scrapedAt,
+        ?DateTimeImmutable  $createdAt = null
     ): self {
-        return new self($id, $source, $title, $url, $position, $scrapedAt);
+        return new self($id, $source, $title, $url, $position, $scrapedAt, $createdAt ?? new DateTimeImmutable())    ;
     }
 
 

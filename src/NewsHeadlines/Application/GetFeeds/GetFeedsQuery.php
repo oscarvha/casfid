@@ -2,7 +2,11 @@
 
 namespace App\NewsHeadlines\Application\GetFeeds;
 
+use App\NewsHeadlines\Application\GetFeeds\Dto\FeedItemDto;
+use App\NewsHeadlines\Application\GetFeeds\Dto\FeedResponseDto;
+use App\NewsHeadlines\Application\GetFeeds\Exception\InvalidCursorException;
 use App\NewsHeadlines\Domain\Repository\NewsHeadlineRepository;
+use DateTimeImmutable;
 
 final class GetFeedsQuery
 {
@@ -15,17 +19,57 @@ final class GetFeedsQuery
     /**
      * @param int $limit
      * @param string|null $cursor
-     * @return array
+     * @return FeedResponseDto
+     * @throws Exception
+     * @throws \JsonException
      */
-    public function execute(int $limit, ?string $cursor): array
+    public function execute(int $limit, ?string $cursor) : FeedResponseDto
     {
         $limit = min($limit, self::MAX_LIMIT);
 
-        $collection = $this->repository->findPaginated(
+        $cursorCreatedAt = null;
+        $cursorId = null;
+
+        if ($cursor !== null) {
+            $decodedRaw = base64_decode($cursor, true);
+
+            if ($decodedRaw === false) {
+                throw new InvalidCursorException('Invalid base64 encoding.');
+            }
+
+            $decoded = json_decode($decodedRaw, true, 512, JSON_THROW_ON_ERROR);
+
+            if (!isset($decoded['createdAt'], $decoded['id'])) {
+                throw new InvalidCursorException('Cursor is missing required fields.');
+            }
+
+           $cursorCreatedAt = new DateTimeImmutable($decoded['createdAt']);
+            $cursorId = $decoded['id'];
+        }
+
+        $items = $this->repository->findPaginated(
             $limit,
-            $cursor
+            $cursorCreatedAt,
+            $cursorId
         );
 
-        return iterator_to_array($collection);
+        $dtos = array_map(
+            static fn ($item) => FeedItemDto::fromDomain($item),
+            iterator_to_array($items)
+        );
+
+        $nextCursor = null;
+
+        if (!empty($dtos)) {
+            $last = end($dtos);
+
+            $nextCursor = base64_encode(json_encode([
+                'createdAt' => $last->createdAt,
+                'id' => $last->id,
+            ], JSON_THROW_ON_ERROR));
+        }
+
+        return new FeedResponseDto($dtos, $nextCursor);
+
     }
 }

@@ -20,6 +20,7 @@ class NewsHeadlineCollectionTest extends TestCase
             NewsHeadlineTitle::fromString('Some title'),
             NewsHeadlineUrl::fromString('https://example.com/news'),
             $position,
+            new \DateTimeImmutable(),
             new \DateTimeImmutable()
         );
     }

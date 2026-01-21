@@ -58,15 +58,19 @@ class GetFeedControllerTest extends ApiTestCase
         $connection = $this->entityManager->getConnection();
 
         $connection->executeStatement(
-            'INSERT INTO news_headlines (id, source, title, url, position, scraped_at)
-             VALUES (:id, :source, :title, :url, :position, :scrapedAt)',
+            'INSERT INTO news_headlines (
+            id, source, title, url, position, scraped_at, created_at
+        ) VALUES (
+            :id, :source, :title, :url, :position, :scraped_at, :created_at
+        )',
             [
                 'id' => '02597efa-e351-41b0-8f29-2efbd1cdeb0c',
                 'source' => 'el_pais',
                 'title' => 'Test headline',
                 'url' => 'https://example.com/test',
                 'position' => 1,
-                'scrapedAt' => '2026-01-20 10:00:00',
+                'scraped_at' => '2026-01-20 10:00:00',
+                'created_at' => '2026-01-20 10:00:00',
             ]
         );
 
@@ -96,5 +100,6 @@ class GetFeedControllerTest extends ApiTestCase
         self::assertSame('https://example.com/test', $response['url']);
         self::assertSame(1, $response['position']);
         self::assertArrayHasKey('scrapedAt', $response);
+        self::assertArrayHasKey('createdAt', $response);
     }
 }

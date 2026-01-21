@@ -16,6 +16,7 @@
         <field name="url"  length="255" unique="true" />
         <field name="position" type="integer" />
         <field name="scrapedAt" type="datetime_immutable" />
+        <field name="createdAt" type="datetime_immutable" />
     </entity>
 
 </doctrine-mapping>
