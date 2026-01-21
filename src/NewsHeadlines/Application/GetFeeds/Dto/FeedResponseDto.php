@@ -2,10 +2,10 @@
 
 namespace App\NewsHeadlines\Application\GetFeeds\Dto;
 
-final class FeedResponseDto
+final readonly class FeedResponseDto
 {
     public function __construct(
-        public readonly array $items,
-        public readonly ?string $nextCursor
+        public array   $items,
+        public ?string $nextCursor
     ) {}
 }
