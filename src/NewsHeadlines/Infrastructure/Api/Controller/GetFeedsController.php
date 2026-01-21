@@ -26,10 +26,8 @@ final readonly class GetFeedsController
      * @return JsonResponse
      */
     #[Route('/api/feeds', name: 'news_headline_get', methods: ['GET'])]
-    public function __invoke(
-        Request $request,
-        ValidatorInterface $validator
-    ): JsonResponse {
+    public function __invoke(Request $request, ValidatorInterface $validator): JsonResponse
+    {
         $dto = GetFeedsRequest::fromRequest($request->query->all());
 
         $errors = $validator->validate($dto);
