@@ -9,7 +9,7 @@ final class GetFeedsRequest
     #[Assert\LessThanOrEqual(50)]
     public int $limit = 2;
 
-    #[Assert\Uuid]
+    #[Assert\Uuid(versions: Assert\Uuid::V4_RANDOM)]
     public ?string $cursor = null;
 
     public static function fromRequest(array $query): self
@@ -20,7 +20,7 @@ final class GetFeedsRequest
             $self->limit = (int) $query['limit'];
         }
 
-        if (isset($query['cursor'])) {
+        if (isset($query['cursor']) && $query['cursor'] !== '') {
             $self->cursor = $query['cursor'];
         }
 

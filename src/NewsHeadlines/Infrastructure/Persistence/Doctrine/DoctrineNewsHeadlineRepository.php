@@ -18,9 +18,11 @@ final class DoctrineNewsHeadlineRepository implements NewsHeadlineRepository
 
     public function __construct(
         private readonly EntityManagerInterface $entityManager
-    ) {
+    )
+    {
         $this->repository = $this->entityManager->getRepository(NewsHeadline::class);
     }
+
     /**
      * @param NewsHeadlineCollection $collection
      */
@@ -55,33 +57,43 @@ final class DoctrineNewsHeadlineRepository implements NewsHeadlineRepository
             ->createQueryBuilder()
             ->select('n')
             ->from(NewsHeadline::class, 'n')
-            ->orderBy('n.scrapedAt', 'DESC')
-            ->addOrderBy('n.id', 'DESC')
+            ->orderBy('n.scrapedAt', 'ASC')
+            ->addOrderBy('n.id', 'ASC')
             ->setMaxResults($limit);
 
         if ($cursor !== null) {
-            $qb
-                ->andWhere('n.id < :cursor')
+            $qb->andWhere(
+                '(n.scrapedAt > (
+                SELECT c.scrapedAt
+                FROM App\NewsHeadlines\Domain\Model\NewsHeadline c
+                WHERE c.id = :cursor
+            ))
+            OR (
+                n.scrapedAt = (
+                    SELECT c2.scrapedAt
+                    FROM App\NewsHeadlines\Domain\Model\NewsHeadline c2
+                    WHERE c2.id = :cursor
+                )
+                AND n.id > :cursor
+            )'
+            )
                 ->setParameter('cursor', $cursor);
         }
 
         $rows = $qb->getQuery()->getArrayResult();
 
-
-        $headlines = array_map(
-            fn (array $row) => NewsHeadline::create(
+        $headlines = [];
+        foreach ($rows as $row) {
+            $headlines[] = NewsHeadline::create(
                 NewsHeadlineId::fromString($row['id']),
                 NewsHeadlineSource::fromString($row['source']),
                 NewsHeadlineTitle::fromString($row['title']),
                 NewsHeadlineUrl::fromString($row['url']),
                 (int) $row['position'],
                 $row['scrapedAt']
-            ),
-            $rows
-        );
+            );
+        }
 
         return NewsHeadlineCollection::fromArray($headlines);
-
-
     }
 }

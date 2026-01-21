@@ -154,6 +154,38 @@ Esta elección supone un compromiso consciente entre pureza teórica y simplicid
 
 ---
 
+
+### 🇪🇸 Comunicación Controller → Caso de Uso (Application Layer)
+
+En este proyecto, los controladores HTTP **no se comunican con la capa de aplicación mediante DTOs**, sino utilizando **tipos primitivos ya validados** (`int`, `string`, `null`).
+
+Esta decisión es **intencionada** y se basa en los siguientes puntos:
+
+- El **Controller** pertenece a la capa de **Infraestructura** y es responsable de:
+    - Interpretar la request HTTP
+    - Validar los datos de entrada
+    - Transformarlos a un formato neutro
+
+- El **Caso de Uso (Application Service)**:
+    - No conoce HTTP
+    - No conoce validaciones de entrada
+    - Solo orquesta el flujo de negocio
+
+- Los DTOs de request son **específicos del transporte HTTP**.  
+  Pasarlos a la capa de aplicación introduciría un acoplamiento innecesario entre Infraestructura y Application.
+
+- El caso de uso actual solo requiere parámetros simples (`limit`, `cursor`), por lo que introducir un DTO adicional en la capa de aplicación sería *overengineering*.
+
+- Este enfoque respeta los principios de **DDD y Arquitectura Hexagonal**, manteniendo:
+    - Infraestructura aislada
+    - Application independiente del transporte
+    - Dominio completamente ajeno a HTTP y validaciones
+
+Si en el futuro el caso de uso creciera en complejidad (más parámetros, invariantes o reglas propias),
+podría introducirse un DTO de Application sin romper el diseño actual.
+
+---
+
 ### ⚖️ Enfoque Pragmático
 
 El objetivo de la arquitectura es ofrecer:
@@ -240,6 +272,35 @@ This represents a conscious trade-off between theoretical purity and practical s
 
 ---
 
+
+### 🇬🇧 Controller → Use Case Communication (Application Layer)
+
+In this project, HTTP controllers **do not communicate with the application layer using DTOs**, but instead pass **validated primitive values** (`int`, `string`, `null`) to the use cases.
+
+This is a **deliberate architectural decision**, based on the following points:
+
+- The **Controller** belongs to the **Infrastructure** layer and is responsible for:
+    - Handling the HTTP request
+    - Validating input data
+    - Translating it into a neutral format
+
+- The **Application Service / Use Case**:
+    - Has no knowledge of HTTP
+    - Does not perform input validation
+    - Only orchestrates business flow
+
+- Request DTOs are **transport-specific (HTTP)**.  
+  Passing them into the application layer would introduce unnecessary coupling between Infrastructure and Application.
+
+- The current use case only requires simple parameters (`limit`, `cursor`), making an additional Application DTO unnecessary and overengineered.
+
+- This approach aligns with **DDD and Hexagonal Architecture** principles by keeping:
+    - Infrastructure concerns isolated
+    - Application independent from transport
+    - Domain completely unaware of HTTP and validation details
+
+If the use case grows in complexity in the future, an Application-level DTO can be introduced without breaking the current design.
+
 ### ⚖️ Pragmatic Approach
 
 The architectural goal of this project is to provide:
@@ -248,3 +309,4 @@ The architectural goal of this project is to provide:
 - Explicit and documented design decisions
 
 Each architectural choice is intended to solve real project needs while avoiding over-engineering.
+
