@@ -57,3 +57,7 @@ services:
 
     App\NewsHeadlines\Domain\Port\NewsHeadlineIdGenerator:
         alias: App\NewsHeadlines\Infrastructure\Identity\SymfonyNewsHeadlineIdGenerator
+
+    App\Shared\Security\Infrastructure\Api\Symfony\ApiTokenAuthenticator:
+        arguments:
+            $apiToken: '%env(API_AUTH_TOKEN)%'

@@ -81,22 +81,232 @@ De esta forma compartirás los mismos permisos al utilizar Symfony CLI dentro de
 
 ---
 
-## Recomendación técnica
 
-Presta especial atención al control de errores, al desacoplamiento y con la vista siempre puesta en el rendimiento y escalabilidad.
+## 🧠 Decisiones de Diseño y Arquitectura - ES
+
+### 📐 Arquitectura General
+
+La aplicación está estructurada en tres capas principales:
+
+- **Domain**  
+  Contiene el núcleo del negocio: entidades, value objects, colecciones y contratos (interfaces).  
+  Esta capa no depende de ningún framework ni detalle técnico.
+
+- **Application**  
+  Implementa los casos de uso de la aplicación.  
+  Orquesta el dominio a través de interfaces, sin conocimiento de cómo se persisten o exponen los datos.
+
+- **Infrastructure**  
+  Contiene los detalles técnicos: controladores HTTP, repositorios Doctrine, listeners, configuración de seguridad, etc.  
+  Actúa como adaptador entre el mundo exterior y la aplicación.
+
+Las dependencias apuntan siempre hacia el dominio, cumpliendo el principio fundamental de la arquitectura hexagonal.
 
 ---
 
-## Entrega
+### 🔌 Arquitectura Hexagonal (Ports & Adapters)
 
-- Sube el proyecto a un **repositorio público** (GitHub, GitLab, etc.).
-- Realiza **commits descriptivos y frecuentes**, documentando cada avance.
-- Comparte el enlace con el equipo técnico de **CASFID**.
+El sistema sigue el patrón **Ports & Adapters**:
+
+- Los **ports** se definen como interfaces en el dominio o la aplicación (por ejemplo, repositorios).
+- Los **adapters** viven en la infraestructura (por ejemplo, implementaciones Doctrine o controladores HTTP).
+
+Esto permite sustituir tecnologías sin afectar al dominio, facilita el testeo y evita acoplamientos innecesarios con el framework.
 
 ---
 
-¡Buena suerte!
+### 📦 Domain-Driven Design (DDD)
 
-Esperamos que disfrutes el reto y lo uses como una oportunidad para mostrar tu manera de trabajar, tu estilo de código y tu pensamiento técnico.
+Se ha aplicado **DDD táctico** de forma deliberada y proporcionada:
 
-¡Gracias por tu interés en **CASFID**!
+- El dominio modela conceptos explícitos del negocio.
+- Se utilizan **Value Objects** inmutables.
+- Los repositorios se definen como contratos, no como implementaciones técnicas.
+
+No se han introducido patrones avanzados de DDD (Domain Events, Aggregates complejos) al no ser necesarios para el alcance actual del proyecto.
+
+---
+
+### 📄 Paginación basada en Cursor
+
+Se ha optado por un sistema de **paginación basada en cursor** en lugar de offset tradicional.
+
+Aunque puede considerarse una solución más compleja para el tamaño actual del proyecto, esta decisión facilita la escalabilidad futura y evita problemas habituales del paginado por offset en grandes volúmenes de datos.
+
+El cursor se basa en el identificador del último elemento recuperado.
+
+---
+
+### 🧱 Value Objects y Persistencia
+
+No se han definido **Doctrine Custom Types** para los Value Objects.
+
+En su lugar:
+- El dominio expone los valores mediante getters que devuelven tipos primitivos.
+- Los Value Objects implementan `__toString()` cuando representan un valor textual único.
+
+Esta decisión se basa en que:
+1. Actualmente el dominio no necesita operar internamente con los Value Objects.
+2. `__toString()` es un patrón común y aceptado para este tipo de objetos.
+3. Se evita acoplar el dominio a detalles de persistencia.
+
+Esta elección supone un compromiso consciente entre pureza teórica y simplicidad práctica.
+
+---
+
+
+### 🇪🇸 Comunicación Controller → Caso de Uso (Application Layer)
+
+En este proyecto, los controladores HTTP **no se comunican con la capa de aplicación mediante DTOs**, sino utilizando **tipos primitivos ya validados** (`int`, `string`, `null`).
+
+Esta decisión es **intencionada** y se basa en los siguientes puntos:
+
+- El **Controller** pertenece a la capa de **Infraestructura** y es responsable de:
+    - Interpretar la request HTTP
+    - Validar los datos de entrada
+    - Transformarlos a un formato neutro
+
+- El **Caso de Uso (Application Service)**:
+    - No conoce HTTP
+    - No conoce validaciones de entrada
+    - Solo orquesta el flujo de negocio
+
+- Los DTOs de request son **específicos del transporte HTTP**.  
+  Pasarlos a la capa de aplicación introduciría un acoplamiento innecesario entre Infraestructura y Application.
+
+- El caso de uso actual solo requiere parámetros simples (`limit`, `cursor`), por lo que introducir un DTO adicional en la capa de aplicación sería *overengineering*.
+
+- Este enfoque respeta los principios de **DDD y Arquitectura Hexagonal**, manteniendo:
+    - Infraestructura aislada
+    - Application independiente del transporte
+    - Dominio completamente ajeno a HTTP y validaciones
+
+Si en el futuro el caso de uso creciera en complejidad (más parámetros, invariantes o reglas propias),
+podría introducirse un DTO de Application sin romper el diseño actual.
+
+---
+
+### ⚖️ Enfoque Pragmático
+
+El objetivo de la arquitectura es ofrecer:
+- Separación clara de responsabilidades
+- Facilidad de testeo y evolución
+- Decisiones justificadas y documentadas
+
+Cada elección arquitectónica está pensada para resolver problemas reales del proyecto, evitando la sobre-ingeniería.
+
+
+## 🧠 Design Decisions and Architecture - ENG
+
+This project follows a **pragmatic approach** to **Domain-Driven Design (DDD)** and **Hexagonal Architecture (Ports & Adapters)**, prioritizing clarity, maintainability, and scalability while avoiding unnecessary complexity.
+
+---
+
+### 📐 General Architecture
+
+The application is structured into three main layers:
+
+- **Domain**  
+  Contains the core business logic: entities, value objects, collections, and contracts (interfaces).  
+  This layer is framework-agnostic and has no technical dependencies.
+
+- **Application**  
+  Implements application use cases.  
+  It orchestrates domain logic through interfaces without knowing how data is persisted or exposed.
+
+- **Infrastructure**  
+  Contains technical details such as HTTP controllers, Doctrine repositories, event listeners, and security configuration.  
+  Acts as an adapter between the outside world and the application.
+
+All dependencies point inward toward the domain, respecting the core principle of hexagonal architecture.
+
+---
+
+### 🔌 Hexagonal Architecture (Ports & Adapters)
+
+The system follows the **Ports & Adapters** pattern:
+
+- **Ports** are defined as interfaces in the Domain or Application layers (e.g. repositories).
+- **Adapters** are implemented in the Infrastructure layer (e.g. Doctrine repositories, HTTP controllers).
+
+This approach allows replacing technologies without affecting the domain, improves testability, and reduces coupling to the framework.
+
+---
+
+### 📦 Domain-Driven Design (DDD)
+
+A **tactical DDD** approach has been applied deliberately and proportionally:
+
+- The domain models explicit business concepts.
+- **Value Objects** are immutable.
+- Repositories are defined as contracts, not technical implementations.
+
+Advanced DDD patterns (such as domain events or complex aggregates) were intentionally avoided as they are not required for the current scope.
+
+---
+
+### 📄 Cursor-Based Pagination
+
+A **cursor-based pagination** strategy was chosen instead of traditional offset-based pagination.
+
+Although this may be considered overkill for the current size of the project, it provides better scalability and avoids common issues related to offset pagination when dealing with large datasets.
+
+The cursor is based on the identifier of the last retrieved item.
+
+---
+
+### 🧱 Value Objects and Persistence
+
+**Doctrine Custom Types** were intentionally not used for Value Objects.
+
+Instead:
+- The domain exposes primitive values via getters.
+- Value Objects implement `__toString()` when they represent a single textual value.
+
+This decision is based on the following considerations:
+1. The domain currently does not need to operate internally on Value Objects.
+2. `__toString()` is a common and accepted pattern for this type of object.
+3. It avoids coupling the domain to persistence-specific concerns.
+
+This represents a conscious trade-off between theoretical purity and practical simplicity.
+
+---
+
+
+### 🇬🇧 Controller → Use Case Communication (Application Layer)
+
+In this project, HTTP controllers **do not communicate with the application layer using DTOs**, but instead pass **validated primitive values** (`int`, `string`, `null`) to the use cases.
+
+This is a **deliberate architectural decision**, based on the following points:
+
+- The **Controller** belongs to the **Infrastructure** layer and is responsible for:
+    - Handling the HTTP request
+    - Validating input data
+    - Translating it into a neutral format
+
+- The **Application Service / Use Case**:
+    - Has no knowledge of HTTP
+    - Does not perform input validation
+    - Only orchestrates business flow
+
+- Request DTOs are **transport-specific (HTTP)**.  
+  Passing them into the application layer would introduce unnecessary coupling between Infrastructure and Application.
+
+- The current use case only requires simple parameters (`limit`, `cursor`), making an additional Application DTO unnecessary and overengineered.
+
+- This approach aligns with **DDD and Hexagonal Architecture** principles by keeping:
+    - Infrastructure concerns isolated
+    - Application independent from transport
+    - Domain completely unaware of HTTP and validation details
+
+If the use case grows in complexity in the future, an Application-level DTO can be introduced without breaking the current design.
+
+### ⚖️ Pragmatic Approach
+
+The architectural goal of this project is to provide:
+- Clear separation of responsibilities
+- Easy testability and evolution
+- Explicit and documented design decisions
+
+Each architectural choice is intended to solve real project needs while avoiding over-engineering.
+

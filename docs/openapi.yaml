@@ -1,0 +1,150 @@
+openapi: 3.0.3
+
+info:
+    title: News Feed API
+    version: 1.0.0
+    description: Technical test API
+
+servers:
+    - url: http://localhost:8890
+      description: Local development
+
+components:
+    securitySchemes:
+        ApiTokenAuth:
+            type: http
+            scheme: bearer
+            bearerFormat: API_TOKEN
+
+security:
+    - ApiTokenAuth: []
+
+paths:
+    /api/auth/check:
+        get:
+            summary: Check API authentication token
+            tags:
+                - Authentication
+            description: Validates the API token sent via Authorization header.
+            security:
+                - ApiTokenAuth: []
+            responses:
+                '200':
+                    description: Token is valid
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    authenticated:
+                                        type: boolean
+                                        example: true
+                                    message:
+                                        type: string
+                                        example: The API token is valid.
+                '401':
+                    description: Unauthorized
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    error:
+                                        type: string
+                                        example: Unauthorized
+                                    message:
+                                        type: string
+                                        example: Authentication required
+    /api/feeds:
+        get:
+            summary: Get news feeds
+            tags:
+                - Feeds
+            description: Returns a paginated list of news feeds using cursor-based pagination.
+            security:
+                -   ApiTokenAuth: [ ]
+            parameters:
+                -   name: limit
+                    in: query
+                    required: false
+                    description: Maximum number of items to return
+                    schema:
+                        type: integer
+                        minimum: 1
+                        maximum: 50
+                        default: 2
+                        example: 10
+                -   name: cursor
+                    in: query
+                    required: false
+                    description: Cursor for pagination (UUID of the last item from previous page)
+                    schema:
+                        type: string
+                        format: uuid
+                        example: bf6673b6-fc1a-4308-8d68-697e5e379191
+            responses:
+                '200':
+                    description: Feeds retrieved successfully
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    items:
+                                        type: array
+                                        items:
+                                            type: object
+                                            properties:
+                                                id:
+                                                    type: string
+                                                    format: uuid
+                                                    example: bf6673b6-fc1a-4308-8d68-697e5e379191
+                                                source:
+                                                    type: string
+                                                    example: el_mundo
+                                                title:
+                                                    type: string
+                                                    example: Some title
+                                                url:
+                                                    type: string
+                                                    format: uri
+                                                    example: https://example.com
+                                                position:
+                                                    type: integer
+                                                    example: 1
+                                                scrapedAt:
+                                                    type: string
+                                                    format: date-time
+                                                    example: 2026-01-20T12:00:00+00:00
+                                    nextCursor:
+                                        type: string
+                                        format: uuid
+                                        nullable: true
+                                        example: a3c1c5b2-9f4e-4a1f-8c92-4b4c6c3e2d11
+                '400':
+                    description: Invalid request parameters
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    error:
+                                        type: string
+                                        example: Bad Request
+                                    details:
+                                        type: array
+                                        items:
+                                            type: string
+                                        example:
+                                            - "limit: This value should be positive."
+                                            - "cursor: This is not a valid UUID."
+                '401':
+                    description: Unauthorized
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    error:
+                                        type: string
+                                        example: Unauthorized

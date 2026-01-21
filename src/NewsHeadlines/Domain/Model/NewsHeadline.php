@@ -11,7 +11,7 @@ use DateTimeImmutable;
 /**
  *
  */
-class NewsHeadline
+final readonly class NewsHeadline
 {
     /**
      * @param NewsHeadlineId $id
@@ -47,6 +47,16 @@ class NewsHeadline
     public function url(): string
     {
         return $this->url->__toString();
+    }
+
+    public function position(): int
+    {
+        return $this->position;
+    }
+
+    public function scrapedAt(): DateTimeImmutable
+    {
+        return $this->scrapedAt;
     }
 
     /**
