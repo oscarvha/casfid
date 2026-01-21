@@ -8,6 +8,7 @@ use App\NewsHeadlines\Domain\Model\NewsHeadline;
 use App\NewsHeadlines\Domain\Port\NewsHeadlineIdGenerator;
 use App\NewsHeadlines\Domain\Scrapper\NewsScraper;
 use App\NewsHeadlines\Domain\ValueObject\NewsHeadlineId;
+use App\NewsHeadlines\Domain\ValueObject\NewsHeadlineOrigin;
 use App\NewsHeadlines\Domain\ValueObject\NewsHeadlineSource;
 use App\NewsHeadlines\Domain\ValueObject\NewsHeadlineTitle;
 use App\NewsHeadlines\Domain\ValueObject\NewsHeadlineUrl;
@@ -65,6 +66,7 @@ final class ElPaisScraper implements NewsScraper
                     $this->source(),
                     NewsHeadlineTitle::fromString($title),
                     NewsHeadlineUrl::fromString($url),
+                    NewsHeadlineOrigin::scraping(),
                     count($headlines) + 1,
                     new \DateTimeImmutable()
                 );

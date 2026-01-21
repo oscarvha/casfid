@@ -41,6 +41,7 @@ final class GetFeedsControllerTest extends ApiTestCase
         self::assertArrayHasKey('nextCursor', $response);
     }
 
+
     /**
      * @throws \JsonException
      * @throws Exception
@@ -51,13 +52,13 @@ final class GetFeedsControllerTest extends ApiTestCase
 
         $connection->executeStatement(
             'INSERT INTO news_headlines (
-            id, source, title, url, position, scraped_at, created_at
+            id, source, title, url, position, scraped_at, created_at, origin
         ) VALUES
         (
-            :id1, :source1, :title1, :url1, :pos1, :date1, :created_at1
+            :id1, :source1, :title1, :url1, :pos1, :date1, :created_at1, :origin1
         ),
         (
-            :id2, :source2, :title2, :url2, :pos2, :date2, :created_at2
+            :id2, :source2, :title2, :url2, :pos2, :date2, :created_at2, :origin2
         )',
             [
                 'id1' => 'bf6673b6-fc1a-4308-8d68-697e5e379191',
@@ -67,6 +68,7 @@ final class GetFeedsControllerTest extends ApiTestCase
                 'pos1' => 1,
                 'date1' => '2026-01-20 10:00:00',
                 'created_at1' => '2026-01-20 10:05:00',
+                'origin1' => 'scraping',
 
                 'id2' => 'a3c1c5b2-9f4e-4a1f-8c92-4b4c6c3e2d11',
                 'source2' => 'el_mundo',
@@ -75,6 +77,7 @@ final class GetFeedsControllerTest extends ApiTestCase
                 'pos2' => 2,
                 'date2' => '2026-01-20 11:00:00',
                 'created_at2' => '2026-01-20 11:05:00',
+                'origin2' => 'scraping',
             ]
         );
 
@@ -116,16 +119,16 @@ final class GetFeedsControllerTest extends ApiTestCase
 
         $connection->executeStatement(
             'INSERT INTO news_headlines (
-            id, source, title, url, position, scraped_at, created_at
+            id, source, title, url, position, scraped_at, created_at, origin
         ) VALUES
         (
-            :id1, :source1, :title1, :url1, :pos1, :date1, :created_at1
+            :id1, :source1, :title1, :url1, :pos1, :date1, :created_at1, :origin1
         ),
         (
-            :id2, :source2, :title2, :url2, :pos2, :date2, :created_at2
+            :id2, :source2, :title2, :url2, :pos2, :date2, :created_at2, :origin2
         ),
         (
-            :id3, :source3, :title3, :url3, :pos3, :date3, :created_at3
+            :id3, :source3, :title3, :url3, :pos3, :date3, :created_at3, :origin3
         )',
             [
                 'id1' => 'bf6673b6-fc1a-4308-8d68-697e5e379191',
@@ -135,6 +138,7 @@ final class GetFeedsControllerTest extends ApiTestCase
                 'pos1' => 1,
                 'date1' => '2026-01-20 10:00:00',
                 'created_at1' => '2026-01-20 10:05:00',
+                'origin1' => 'scraping',
 
                 'id2' => 'a3c1c5b2-9f4e-4a1f-8c92-4b4c6c3e2d11',
                 'source2' => 'el_mundo',
@@ -143,6 +147,7 @@ final class GetFeedsControllerTest extends ApiTestCase
                 'pos2' => 2,
                 'date2' => '2026-01-20 11:00:00',
                 'created_at2' => '2026-01-20 11:05:00',
+                'origin2' => 'scraping',
 
                 'id3' => 'd6e5b9a4-1f2a-4c0b-9a8e-7b6c5d4e3f21',
                 'source3' => 'el_mundo',
@@ -151,6 +156,7 @@ final class GetFeedsControllerTest extends ApiTestCase
                 'pos3' => 3,
                 'date3' => '2026-01-20 12:00:00',
                 'created_at3' => '2026-01-20 12:05:00',
+                'origin3' => 'scraping',
             ]
         );
 
@@ -266,24 +272,26 @@ final class GetFeedsControllerTest extends ApiTestCase
 
         $connection->executeStatement(
             'INSERT INTO news_headlines (
-            id, source, title, url, position, scraped_at, created_at
+            id, source, title, url, position, scraped_at, created_at, origin
         ) VALUES
-        (:id1, :s1, :t1, :u1, 1, :sa1, :ca1),
-        (:id2, :s2, :t2, :u2, 2, :sa2, :ca2)',
+        (:id1, :s1, :t1, :u1, 1, :sa1, :ca1, :o1),
+        (:id2, :s2, :t2, :u2, 2, :sa2, :ca2, :o2)',
             [
                 'id1' => '11111111-1111-1111-1111-111111111111',
-                's1' => 'el_pais',
-                't1' => 'Older',
-                'u1' => 'https://example.com/1',
+                's1'  => 'el_pais',
+                't1'  => 'Older',
+                'u1'  => 'https://example.com/1',
                 'sa1' => '2026-01-20 10:00:00',
                 'ca1' => '2026-01-20 10:05:00',
+                'o1'  => 'scraping',
 
                 'id2' => '22222222-2222-2222-2222-222222222222',
-                's2' => 'el_mundo',
-                't2' => 'Newer',
-                'u2' => 'https://example.com/2',
+                's2'  => 'el_mundo',
+                't2'  => 'Newer',
+                'u2'  => 'https://example.com/2',
                 'sa2' => '2026-01-20 11:00:00',
                 'ca2' => '2026-01-20 11:05:00',
+                'o2'  => 'api',
             ]
         );
 
@@ -309,6 +317,9 @@ final class GetFeedsControllerTest extends ApiTestCase
             ],
             array_column($response['items'], 'id')
         );
-    }
 
-}
+        self::assertSame(
+            ['api', 'scraping'],
+            array_column($response['items'], 'origin')
+        );
+    }}

@@ -4,6 +4,7 @@ namespace App\Tests\NewsHeadlines\Domain\Model;
 
 use App\NewsHeadlines\Domain\Model\NewsHeadline;
 use App\NewsHeadlines\Domain\ValueObject\NewsHeadlineId;
+use App\NewsHeadlines\Domain\ValueObject\NewsHeadlineOrigin;
 use App\NewsHeadlines\Domain\ValueObject\NewsHeadlineSource;
 use App\NewsHeadlines\Domain\ValueObject\NewsHeadlineTitle;
 use App\NewsHeadlines\Domain\ValueObject\NewsHeadlineUrl;
@@ -18,6 +19,7 @@ final class NewsHeadlineTest extends TestCase
             NewsHeadlineSource::fromString('el_pais'),
             NewsHeadlineTitle::fromString('Example title'),
             NewsHeadlineUrl::fromString('https://elpais.com/example'),
+            NewsHeadlineOrigin::api(),
             1,
             new \DateTimeImmutable()
         );

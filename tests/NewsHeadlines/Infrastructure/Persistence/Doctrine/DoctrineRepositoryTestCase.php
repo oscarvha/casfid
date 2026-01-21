@@ -4,6 +4,7 @@ namespace App\Tests\NewsHeadlines\Infrastructure\Persistence\Doctrine;
 
 use App\NewsHeadlines\Domain\Model\NewsHeadline;
 use App\NewsHeadlines\Domain\ValueObject\NewsHeadlineId;
+use App\NewsHeadlines\Domain\ValueObject\NewsHeadlineOrigin;
 use App\NewsHeadlines\Domain\ValueObject\NewsHeadlineSource;
 use App\NewsHeadlines\Domain\ValueObject\NewsHeadlineTitle;
 use App\NewsHeadlines\Domain\ValueObject\NewsHeadlineUrl;
@@ -41,6 +42,7 @@ class DoctrineRepositoryTestCase extends KernelTestCase
             NewsHeadlineSource::fromString('el_pais'),
             NewsHeadlineTitle::fromString('Test headline'),
             NewsHeadlineUrl::fromString($url),
+            NewsHeadlineOrigin::fromString('scraping'),
             1,
             new DateTimeImmutable()
         );

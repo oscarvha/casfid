@@ -3,6 +3,7 @@
 namespace App\NewsHeadlines\Domain\Model;
 
 use App\NewsHeadlines\Domain\ValueObject\NewsHeadlineId;
+use App\NewsHeadlines\Domain\ValueObject\NewsHeadlineOrigin;
 use App\NewsHeadlines\Domain\ValueObject\NewsHeadlineSource;
 use App\NewsHeadlines\Domain\ValueObject\NewsHeadlineTitle;
 use App\NewsHeadlines\Domain\ValueObject\NewsHeadlineUrl;
@@ -18,6 +19,7 @@ final readonly class NewsHeadline
      * @param NewsHeadlineSource $source
      * @param NewsHeadlineTitle $title
      * @param NewsHeadlineUrl $url
+     * @param NewsHeadlineOrigin $origin
      * @param int $position
      * @param DateTimeImmutable $scrapedAt
      * @param DateTimeImmutable $createdAt
@@ -27,6 +29,7 @@ final readonly class NewsHeadline
         private NewsHeadlineSource         $source,
         private NewsHeadlineTitle          $title,
         private NewsHeadlineUrl            $url,
+        private NewsHeadlineOrigin         $origin,
         private int                        $position,
         private DateTimeImmutable          $scrapedAt,
         private DateTimeImmutable          $createdAt
@@ -46,6 +49,14 @@ final readonly class NewsHeadline
     public function source(): string
     {
         return $this->source->__toString();
+    }
+
+    /**
+     * @return string
+     */
+    public function origin(): string
+    {
+        return $this->origin->__toString();
     }
 
     /**
@@ -93,6 +104,7 @@ final readonly class NewsHeadline
      * @param NewsHeadlineSource $source
      * @param NewsHeadlineTitle $title
      * @param NewsHeadlineUrl $url
+     * @param NewsHeadlineOrigin $origin
      * @param int $position
      * @param DateTimeImmutable $scrapedAt
      * @param DateTimeImmutable|null $createdAt
@@ -103,11 +115,12 @@ final readonly class NewsHeadline
         NewsHeadlineSource $source,
         NewsHeadlineTitle  $title,
         NewsHeadlineUrl    $url,
+        NewsHeadlineOrigin $origin,
         int                $position,
         DateTimeImmutable  $scrapedAt,
         ?DateTimeImmutable  $createdAt = null
     ): self {
-        return new self($id, $source, $title, $url, $position, $scrapedAt, $createdAt ?? new DateTimeImmutable())    ;
+        return new self($id, $source, $title, $url,$origin, $position, $scrapedAt, $createdAt ?? new DateTimeImmutable())    ;
     }
 
 

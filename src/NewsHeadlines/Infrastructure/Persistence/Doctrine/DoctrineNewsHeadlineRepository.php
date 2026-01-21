@@ -5,6 +5,7 @@ use App\NewsHeadlines\Domain\Collection\NewsHeadlineCollection;
 use App\NewsHeadlines\Domain\Model\NewsHeadline;
 use App\NewsHeadlines\Domain\Repository\NewsHeadlineRepository;
 use App\NewsHeadlines\Domain\ValueObject\NewsHeadlineId;
+use App\NewsHeadlines\Domain\ValueObject\NewsHeadlineOrigin;
 use App\NewsHeadlines\Domain\ValueObject\NewsHeadlineSource;
 use App\NewsHeadlines\Domain\ValueObject\NewsHeadlineTitle;
 use App\NewsHeadlines\Domain\ValueObject\NewsHeadlineUrl;
@@ -80,6 +81,7 @@ final class DoctrineNewsHeadlineRepository implements NewsHeadlineRepository
                 NewsHeadlineSource::fromString($row['source']),
                 NewsHeadlineTitle::fromString($row['title']),
                 NewsHeadlineUrl::fromString($row['url']),
+                NewsHeadlineOrigin::fromString($row['origin']),
                 (int) $row['position'],
                 $row['scrapedAt'],
                 $row['createdAt']
@@ -114,6 +116,7 @@ final class DoctrineNewsHeadlineRepository implements NewsHeadlineRepository
             NewsHeadlineSource::fromString($row['source']),
             NewsHeadlineTitle::fromString($row['title']),
             NewsHeadlineUrl::fromString($row['url']),
+            NewsHeadlineOrigin::fromString($row['origin']),
             (int) $row['position'],
             $row['scrapedAt'],
             $row['createdAt']

@@ -14,6 +14,7 @@
         <field name="source" length="50" />
         <field name="title"  length="255" />
         <field name="url"  length="255" unique="true" />
+        <field name="origin" length="50" />
         <field name="position" type="integer" />
         <field name="scrapedAt" type="datetime_immutable" />
         <field name="createdAt" type="datetime_immutable" />
