@@ -4,6 +4,7 @@ namespace App\Tests\NewsHeadlines\Infrastructure\Persistence\Doctrine;
 
 use App\NewsHeadlines\Domain\Model\NewsHeadline;
 use App\NewsHeadlines\Domain\ValueObject\NewsHeadlineId;
+use App\NewsHeadlines\Domain\ValueObject\NewsHeadlineOrigin;
 use App\NewsHeadlines\Domain\ValueObject\NewsHeadlineSource;
 use App\NewsHeadlines\Domain\ValueObject\NewsHeadlineTitle;
 use App\NewsHeadlines\Domain\ValueObject\NewsHeadlineUrl;
@@ -34,15 +35,17 @@ class DoctrineRepositoryTestCase extends KernelTestCase
         parent::tearDown();
     }
 
-    protected function headline(string $url): NewsHeadline
+    protected function headline(string $url,int $position = 1, ?DateTimeImmutable $createdAt = null): NewsHeadline
     {
         return NewsHeadline::create(
             NewsHeadlineId::fromString(uniqid('test-', true)),
             NewsHeadlineSource::fromString('el_pais'),
             NewsHeadlineTitle::fromString('Test headline'),
             NewsHeadlineUrl::fromString($url),
-            1,
-            new DateTimeImmutable()
+            NewsHeadlineOrigin::fromString('scraping'),
+            $position,
+            new DateTimeImmutable(),
+            $createdAt ?? new DateTimeImmutable()
         );
     }
 }

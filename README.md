@@ -185,6 +185,40 @@ Si en el futuro el caso de uso creciera en complejidad (más parámetros, invari
 podría introducirse un DTO de Application sin romper el diseño actual.
 
 ---
+## Diseño de la capa de aplicación (sin CQRS estricto)
+
+Este proyecto no implementa CQRS estricto.
+
+La capa de aplicación está organizada por **casos de uso**, no por Command / Query.
+Las clases se nombran según su **intención de negocio**:
+
+- `GetFeeds`
+- `GetFeed`
+- `CreateFeedAction`
+- `FetchTopHeadlines`
+
+Las operaciones de escritura se modelan como **actions** y las de lectura como
+**queries**, manteniendo separación de responsabilidades sin añadir la complejidad
+de CQRS completo.
+
+### Restricción de único de creación: `(source, url)`
+
+Aunque en la implementación actual cada fuente de noticias proviene de un dominio distinto (por ejemplo `elpais.com` y `elmundo.es`), la restricción de unicidad se ha definido intencionadamente como una **combinación de `source` y `url`**, y no únicamente sobre `url`.
+
+Esta es una decisión **conceptual y orientada a la evolución futura**, no solo técnica.
+
+Desde un punto de vista teórico, nada impide que en el futuro dos fuentes distintas puedan publicar la misma URL o la misma ruta. Además, si el proyecto crece, el concepto de `source` puede evolucionar y dejar de ser un simple value object para convertirse en una entidad más rica. En ese escenario:
+
+- El `source` podría almacenar su propio dominio o URL base.
+- La entidad `NewsHeadline` podría almacenar únicamente la ruta relativa.
+- La URL final se construiría dinámicamente combinando `source + path`.
+
+En ese contexto, imponer unicidad solo sobre `url` dejaría de ser correcto.  
+Definir una **clave única compuesta (`source`, `url`)** mantiene el modelo coherente, flexible y preparado para futuras ampliaciones.
+
+Por este motivo, la unicidad se controla en dos niveles:
+- A nivel de **base de datos**, mediante una restricción unique.
+- A nivel de **aplicación**, comprobando explícitamente la existencia antes de crear una noticia.
 
 ### ⚖️ Enfoque Pragmático
 
@@ -272,7 +306,6 @@ This represents a conscious trade-off between theoretical purity and practical s
 
 ---
 
-
 ### 🇬🇧 Controller → Use Case Communication (Application Layer)
 
 In this project, HTTP controllers **do not communicate with the application layer using DTOs**, but instead pass **validated primitive values** (`int`, `string`, `null`) to the use cases.
@@ -300,6 +333,42 @@ This is a **deliberate architectural decision**, based on the following points:
     - Domain completely unaware of HTTP and validation details
 
 If the use case grows in complexity in the future, an Application-level DTO can be introduced without breaking the current design.
+
+
+### Application layer design (no strict CQRS)
+
+This project does not implement strict CQRS.
+
+The application layer is organized around **use cases**, not Command / Query naming.
+Classes are named by **business intent**:
+
+- `GetFeeds`
+- `GetFeed`
+- `CreateFeedAction`
+- `FetchTopHeadlines`
+
+Write operations are modeled as **actions**, and read operations as **queries**,
+keeping separation of concerns without introducing the complexity of full CQRS,
+which is not required for this domain or for a technical test.
+
+### Uniqueness constraint: `(source, url)`
+
+Although in the current implementation each news source comes from a different domain (for example `elpais.com` vs `elmundo.es`), the uniqueness constraint has been intentionally defined as a **combination of `source` and `url`**, instead of relying on `url` alone.
+
+This is a **conceptual and future-proof decision**, not just a technical one.
+
+From a theoretical perspective, nothing prevents two different sources from publishing the same URL or path in the future. Additionally, if the project evolves, the `source` concept may grow into a richer model instead of remaining a simple value object. In that scenario:
+
+- The source could store its own base domain or base URL.
+- The `NewsHeadline` entity could store only a relative path.
+- The final URL would be composed dynamically using `source + path`.
+
+Under such conditions, enforcing uniqueness solely on `url` would no longer be valid.  
+Using a **composite unique constraint (`source`, `url`)** keeps the model consistent, flexible, and aligned with possible future requirements.
+
+For this reason, uniqueness is enforced at two levels:
+- **Database level**, via a unique constraint.
+- **Application level**, via an explicit existence check before creating a new headline.
 
 ### ⚖️ Pragmatic Approach
 

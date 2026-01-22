@@ -2,32 +2,16 @@
 
 namespace App\NewsHeadlines\Domain\ValueObject;
 
-use App\NewsHeadlines\Domain\Exception\InvalidNewsHeadlineSource;
+use App\NewsHeadlines\Domain\Exception\InvalidOriginHeadlineSource;
 
-final readonly class NewsHeadlineSource
+final readonly class NewsHeadlineOrigin
 {
-    private const EL_PAIS  = 'el_pais';
-    private const EL_MUNDO = 'el_mundo';
+    private const SCRAPING  = 'scraping';
+    private const API = 'api';
 
     private function __construct(
         private string $value
     ) {}
-
-    /**
-     * @return self
-     */
-    public static function elPais(): self
-    {
-        return new self(self::EL_PAIS);
-    }
-
-    /**
-     * @return self
-     */
-    public static function elMundo(): self
-    {
-        return new self(self::EL_MUNDO);
-    }
 
     /**
      * @return string
@@ -38,7 +22,7 @@ final readonly class NewsHeadlineSource
     }
 
     /**
-     * @param NewsHeadlineSource $other
+     * @param NewsHeadlineOrigin $other
      * @return bool
      */
     public function equals(self $other): bool
@@ -55,12 +39,28 @@ final readonly class NewsHeadlineSource
         $normalized = strtolower(trim($value));
 
         if (!in_array($normalized, self::allowed(), true)) {
-            throw new InvalidNewsHeadlineSource(
-                sprintf('Invalid news source "%s" allowed values "%s" ', $value, implode(', ', self::allowed()))
+            throw new InvalidOriginHeadlineSource(
+                sprintf('Invalid news source "%s"', $value)
             );
         }
 
         return new self($normalized);
+    }
+
+    /**
+     * @return self
+     */
+    public static function scraping(): self
+    {
+        return new self(self::SCRAPING);
+    }
+
+    /**
+     * @return self
+     */
+    public static function api(): self
+    {
+        return new self(self::API);
     }
 
     /**
@@ -69,8 +69,8 @@ final readonly class NewsHeadlineSource
     private static function allowed(): array
     {
         return [
-            self::EL_PAIS,
-            self::EL_MUNDO,
+            self::SCRAPING,
+            self::API
         ];
     }
 }

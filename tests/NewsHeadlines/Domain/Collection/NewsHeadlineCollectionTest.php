@@ -5,6 +5,7 @@ namespace App\Tests\NewsHeadlines\Domain\Collection;
 use App\NewsHeadlines\Domain\Collection\NewsHeadlineCollection;
 use App\NewsHeadlines\Domain\Model\NewsHeadline;
 use App\NewsHeadlines\Domain\ValueObject\NewsHeadlineId;
+use App\NewsHeadlines\Domain\ValueObject\NewsHeadlineOrigin;
 use App\NewsHeadlines\Domain\ValueObject\NewsHeadlineSource;
 use App\NewsHeadlines\Domain\ValueObject\NewsHeadlineTitle;
 use App\NewsHeadlines\Domain\ValueObject\NewsHeadlineUrl;
@@ -19,7 +20,9 @@ class NewsHeadlineCollectionTest extends TestCase
             NewsHeadlineSource::elPais(),
             NewsHeadlineTitle::fromString('Some title'),
             NewsHeadlineUrl::fromString('https://example.com/news'),
+            NewsHeadlineOrigin::api(),
             $position,
+            new \DateTimeImmutable(),
             new \DateTimeImmutable()
         );
     }

@@ -11,8 +11,10 @@ final readonly class FeedItemDto
         public string $source,
         public string $title,
         public string $url,
+        public string $origin,
         public int    $position,
-        public string $scrapedAt
+        public string $scrapedAt,
+        public string $createdAt
     ) {}
 
     public static function fromDomain(NewsHeadline $headline): self
@@ -22,8 +24,10 @@ final readonly class FeedItemDto
             $headline->source(),
             $headline->title(),
             $headline->url(),
+            $headline->origin(),
             $headline->position(),
-            $headline->scrapedAt()->format(DATE_ATOM)
+            $headline->scrapedAt()->format(DATE_ATOM),
+            $headline->createdAt()->format(DATE_ATOM)
         );
     }
 }

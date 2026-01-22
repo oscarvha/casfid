@@ -5,7 +5,7 @@ namespace App\Tests\NewsHeadlines\Infrastructure\Api\Controller;
 use App\Tests\Shared\Infrastructure\Api\ApiTestCase;
 use Exception;
 
-class GetFeedControllerTest extends ApiTestCase
+final class GetFeedControllerTest extends ApiTestCase
 {
     public function test_it_returns_401_without_token(): void
     {
@@ -51,22 +51,27 @@ class GetFeedControllerTest extends ApiTestCase
     }
 
     /**
-     * @throws Exception
+     * @throws Exception|\Doctrine\DBAL\Exception
      */
     public function test_it_returns_feed_when_it_exists(): void
     {
         $connection = $this->entityManager->getConnection();
 
         $connection->executeStatement(
-            'INSERT INTO news_headlines (id, source, title, url, position, scraped_at)
-             VALUES (:id, :source, :title, :url, :position, :scrapedAt)',
+            'INSERT INTO news_headlines (
+            id, source, title, url, position, scraped_at, created_at, origin
+        ) VALUES (
+            :id, :source, :title, :url, :position, :scraped_at, :created_at, :origin
+        )',
             [
                 'id' => '02597efa-e351-41b0-8f29-2efbd1cdeb0c',
                 'source' => 'el_pais',
                 'title' => 'Test headline',
                 'url' => 'https://example.com/test',
                 'position' => 1,
-                'scrapedAt' => '2026-01-20 10:00:00',
+                'scraped_at' => '2026-01-20 10:00:00',
+                'created_at' => '2026-01-20 10:00:00',
+                'origin' => 'scraping',
             ]
         );
 
@@ -95,6 +100,8 @@ class GetFeedControllerTest extends ApiTestCase
         self::assertSame('Test headline', $response['title']);
         self::assertSame('https://example.com/test', $response['url']);
         self::assertSame(1, $response['position']);
+        self::assertSame('scraping', $response['origin']);
         self::assertArrayHasKey('scrapedAt', $response);
+        self::assertArrayHasKey('createdAt', $response);
     }
 }

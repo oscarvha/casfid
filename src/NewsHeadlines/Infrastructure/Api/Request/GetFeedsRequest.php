@@ -9,7 +9,6 @@ final class GetFeedsRequest
     #[Assert\LessThanOrEqual(50)]
     public int $limit = 2;
 
-    #[Assert\Uuid(versions: Assert\Uuid::V4_RANDOM)]
     public ?string $cursor = null;
 
     public static function fromRequest(array $query): self
