@@ -239,5 +239,22 @@ final class DoctrineNewsHeadlineRepositoryTest extends DoctrineRepositoryTestCas
         self::assertSame(3, $next);
     }
 
+    public function test_it_deletes_a_headline(): void
+    {
+        $repository = self::getContainer()->get(NewsHeadlineRepository::class);
+
+        $headline = $this->headline(
+            'https://elpais.com/delete-me'
+        );
+
+        $repository->save($headline);
+
+        $repository->deleteById($headline->id());
+
+        $found = $repository->findById($headline->id());
+
+        self::assertNull($found);
+    }
+
 
 }

@@ -53,4 +53,10 @@ interface NewsHeadlineRepository
      * @return bool
      */
     public function existByUrlInSource(string $url, string $source): bool;
+
+    /**
+     * @param string $id
+     * @return void
+     */
+    public function deleteById(string $id): void;
 }

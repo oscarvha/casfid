@@ -186,4 +186,14 @@ final class DoctrineNewsHeadlineRepository implements NewsHeadlineRepository
 
         return $count > 0;
     }
-}
+
+    public function deleteById(string $id): void
+    {
+        $this->entityManager
+            ->createQueryBuilder()
+            ->delete(NewsHeadline::class, 'n')
+            ->where('n.id = :id')
+            ->setParameter('id', $id)
+            ->getQuery()
+            ->execute();
+    }}
