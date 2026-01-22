@@ -1,0 +1,21 @@
+doctrine:
+    dbal:
+        url: '%env(resolve:DATABASE_URL)%'
+        profiling_collect_backtrace: '%kernel.debug%'
+
+    orm:
+        validate_xml_mapping: true
+        naming_strategy: doctrine.orm.naming_strategy.underscore_number_aware
+
+        auto_mapping: false
+
+        mappings:
+            NewsHeadlines:
+                type: xml
+                is_bundle: false
+                dir: '%kernel.project_dir%/src/NewsHeadlines/Infrastructure/Persistence/Doctrine/Mapping'
+                prefix: 'App\NewsHeadlines\Domain\Model'
+                alias: NewsHeadlines
+
+        controller_resolver:
+            auto_mapping: false

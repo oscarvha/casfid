@@ -31,6 +31,11 @@ RUN apt update
 
 RUN apt install php8.4-fpm php8.4-common php8.4-mysql php8.4-sqlite3 php8.4-mongodb php8.4-xml php8.4-xmlrpc php8.4-curl php8.4-gd php8.4-cli php8.4-dev php8.4-imap php8.4-mbstring php8.4-opcache php8.4-soap php8.4-zip php8.4-redis php8.4-intl -y
 
+RUN apt install php8.4-xdebug -y
+
+COPY ../docker/xdebug.ini /etc/php/8.4/mods-available/xdebug.ini
+RUN phpenmod xdebug
+
 RUN curl -fsSL https://deb.nodesource.com/setup_22.x | bash -
 RUN apt install nodejs -y
 

@@ -16,5 +16,48 @@ services:
     App\:
         resource: '../src/'
 
-    # add more service definitions when explicit configuration is needed
-    # please note that last definitions always *replace* previous ones
+        # add more service definitions when explicit configuration is needed
+        # please note that last definitions always *replace* previous ones
+    el_pais.http_client:
+        class: Symfony\Contracts\HttpClient\HttpClientInterface
+        factory: [ 'Symfony\Component\HttpClient\HttpClient', 'create' ]
+        arguments:
+            -   timeout: 10
+                headers:
+                    User-Agent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+
+    App\NewsHeadlines\Infrastructure\Scrapper\ElPaisScraper:
+        arguments:
+            $client: '@el_pais.http_client'
+            $idGenerator: '@App\NewsHeadlines\Infrastructure\Identity\SymfonyNewsHeadlineIdGenerator'
+
+        tags: [ 'news.scraper' ]
+
+    el_mundo.http_client:
+        class: Symfony\Contracts\HttpClient\HttpClientInterface
+        factory: [ 'Symfony\Component\HttpClient\HttpClient', 'create' ]
+        arguments:
+            -   timeout: 10
+                headers:
+                    User-Agent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+
+    App\NewsHeadlines\Infrastructure\Scrapper\ElMundoScraper:
+        arguments:
+            $client: '@el_mundo.http_client'
+            $idGenerator: '@App\NewsHeadlines\Domain\Port\NewsHeadlineIdGenerator'
+
+        tags: [ 'news.scraper' ]
+
+    App\NewsHeadlines\Domain\Repository\NewsHeadlineRepository:
+        alias: App\NewsHeadlines\Infrastructure\Persistence\Doctrine\DoctrineNewsHeadlineRepository
+
+    App\NewsHeadlines\Application\FetchTopHeadlines:
+        arguments:
+            $scrapers: !tagged_iterator 'news.scraper'
+
+    App\NewsHeadlines\Domain\Port\NewsHeadlineIdGenerator:
+        alias: App\NewsHeadlines\Infrastructure\Identity\SymfonyNewsHeadlineIdGenerator
+
+    App\Shared\Security\Infrastructure\Api\Symfony\ApiTokenAuthenticator:
+        arguments:
+            $apiToken: '%env(API_AUTH_TOKEN)%'
