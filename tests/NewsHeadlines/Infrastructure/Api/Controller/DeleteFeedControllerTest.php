@@ -50,7 +50,7 @@ final class DeleteFeedControllerTest extends ApiTestCase
     {
         $this->client->request(
             'DELETE',
-            '/api/feeds/aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa',
+            '/api/feeds/92dd32ad-95c9-4da1-a5f8-3b6363bd4404',
             [],
             [],
             ['HTTP_Authorization' => 'Bearer ' . $_ENV['API_AUTH_TOKEN']]

@@ -1,0 +1,35 @@
+includes:
+    - vendor/phpstan/phpstan-symfony/extension.neon
+    - vendor/phpstan/phpstan-doctrine/extension.neon
+
+parameters:
+    level: 7
+
+    paths:
+        - bin
+        - config
+        - public
+        - src
+        - tests
+
+    # PHPDoc: confía en tus contratos (clave en DDD)
+    treatPhpDocTypesAsCertain: true
+
+    # Detecta mixed implícitos
+    checkImplicitMixed: true
+
+    # Detecta propiedades no inicializadas
+    checkUninitializedProperties: true
+
+    # Symfony
+    symfony:
+        containerXmlPath: var/cache/dev/App_KernelDevDebugContainer.xml
+
+    # Excluir ruido
+    excludePaths:
+        analyse:
+            - var/*
+            - vendor/*
+            - public/index.php
+
+    reportUnmatchedIgnoredErrors: true

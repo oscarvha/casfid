@@ -15,6 +15,9 @@ final class GetFeedsControllerTest extends ApiTestCase
         self::assertResponseHeaderSame('Content-Type', 'application/json');
     }
 
+    /**
+     * @throws \JsonException
+     */
     public function test_it_returns_200_with_valid_token(): void
     {
         $this->client->request(
@@ -30,8 +33,12 @@ final class GetFeedsControllerTest extends ApiTestCase
         self::assertResponseStatusCodeSame(200);
         self::assertResponseHeaderSame('Content-Type', 'application/json');
 
+        $content = $this->client->getResponse()->getContent();
+
+        self::assertNotFalse($content);
+
         $response = json_decode(
-            $this->client->getResponse()->getContent(),
+            $content,
             true,
             512,
             JSON_THROW_ON_ERROR
@@ -91,8 +98,12 @@ final class GetFeedsControllerTest extends ApiTestCase
 
         self::assertResponseStatusCodeSame(200);
 
+        $content = $this->client->getResponse()->getContent();
+
+        self::assertNotFalse($content);
+
         $response = json_decode(
-            $this->client->getResponse()->getContent(),
+            $content,
             true,
             512,
             JSON_THROW_ON_ERROR
@@ -175,8 +186,12 @@ final class GetFeedsControllerTest extends ApiTestCase
 
         self::assertResponseStatusCodeSame(200);
 
+        $content = $this->client->getResponse()->getContent();
+
+        self::assertNotFalse($content);
+
         $response = json_decode(
-            $this->client->getResponse()->getContent(),
+            $content,
             true,
             512,
             JSON_THROW_ON_ERROR
@@ -206,8 +221,12 @@ final class GetFeedsControllerTest extends ApiTestCase
 
         self::assertResponseStatusCodeSame(400);
 
+        $content = $this->client->getResponse()->getContent();
+
+        self::assertNotFalse($content);
+
         $response = json_decode(
-            $this->client->getResponse()->getContent(),
+            $content,
             true,
             512,
             JSON_THROW_ON_ERROR
@@ -248,8 +267,12 @@ final class GetFeedsControllerTest extends ApiTestCase
 
         self::assertResponseStatusCodeSame(200);
 
+        $content = $this->client->getResponse()->getContent();
+
+        self::assertNotFalse($content);
+
         $response = json_decode(
-            $this->client->getResponse()->getContent(),
+            $content,
             true,
             512,
             JSON_THROW_ON_ERROR
@@ -303,8 +326,12 @@ final class GetFeedsControllerTest extends ApiTestCase
             ['HTTP_Authorization' => 'Bearer ' . $_ENV['API_AUTH_TOKEN']]
         );
 
+        $content = $this->client->getResponse()->getContent();
+
+        self::assertNotFalse($content);
+
         $response = json_decode(
-            $this->client->getResponse()->getContent(),
+             $content,
             true,
             512,
             JSON_THROW_ON_ERROR

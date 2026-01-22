@@ -1,4 +1,5 @@
 <?php
+
 namespace App\NewsHeadlines\Infrastructure\Api\Request;
 
 use Symfony\Component\Validator\Constraints as Assert;
@@ -11,6 +12,9 @@ final class GetFeedsRequest
 
     public ?string $cursor = null;
 
+    /**
+     * @param array<string, mixed> $query
+     */
     public static function fromRequest(array $query): self
     {
         $self = new self();

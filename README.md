@@ -229,6 +229,17 @@ El objetivo de la arquitectura es ofrecer:
 
 Cada elección arquitectónica está pensada para resolver problemas reales del proyecto, evitando la sobre-ingeniería.
 
+### Análisis estático y calidad de código
+
+Este proyecto utiliza PHPStan para reforzar el análisis estático y la seguridad de tipos.
+
+- PHPStan está configurado en **nivel 7**
+- No se ignoran errores de análisis (`@phpstan-ignore` no se utiliza)
+- Se comprueba explícitamente la inicialización de propiedades y la ausencia de `mixed` implícitos
+- Los límites de entrada (HTTP, persistencia) se tratan como datos no confiables y se normalizan antes de su uso
+
+El objetivo no es solo detectar errores en tiempo de ejecución, sino mantener contratos claros entre capas y mejorar la mantenibilidad del código a largo plazo.
+
 
 ## 🧠 Design Decisions and Architecture - ENG
 
@@ -369,6 +380,18 @@ Using a **composite unique constraint (`source`, `url`)** keeps the model consis
 For this reason, uniqueness is enforced at two levels:
 - **Database level**, via a unique constraint.
 - **Application level**, via an explicit existence check before creating a new headline.
+- 
+## Static Analysis & Code Quality
+
+This project uses PHPStan to enforce a strong level of static analysis and type safety.
+
+- PHPStan is configured at **level 7**
+- No errors are ignored (`@phpstan-ignore` is not used)
+- Uninitialized properties and implicit `mixed` types are explicitly checked
+- Input boundaries (HTTP, persistence) are treated as untrusted data and normalized accordingly
+
+The goal is to maintain clear contracts between layers and catch design issues early, not only runtime errors.
+
 
 ### ⚖️ Pragmatic Approach
 

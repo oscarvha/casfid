@@ -16,6 +16,9 @@ use Doctrine\ORM\EntityRepository;
 
 final class DoctrineNewsHeadlineRepository implements NewsHeadlineRepository
 {
+    /**
+     * @var EntityRepository<NewsHeadline>
+     */
     private EntityRepository $repository;
 
     public function __construct(
@@ -74,9 +77,10 @@ final class DoctrineNewsHeadlineRepository implements NewsHeadlineRepository
 
         $rows = $qb->getQuery()->getArrayResult();
 
-        foreach ($rows as &$row) {
+        $headlines = [];
 
-            $row = NewsHeadline::create(
+        foreach ($rows as $row) {
+            $headlines[] = NewsHeadline::create(
                 NewsHeadlineId::fromString($row['id']),
                 NewsHeadlineSource::fromString($row['source']),
                 NewsHeadlineTitle::fromString($row['title']),
@@ -88,8 +92,8 @@ final class DoctrineNewsHeadlineRepository implements NewsHeadlineRepository
             );
         }
 
+        return NewsHeadlineCollection::fromArray($headlines);
 
-        return NewsHeadlineCollection::fromArray($rows);
     }
 
     /**
@@ -196,4 +200,5 @@ final class DoctrineNewsHeadlineRepository implements NewsHeadlineRepository
             ->setParameter('id', $id)
             ->getQuery()
             ->execute();
-    }}
+    }
+}

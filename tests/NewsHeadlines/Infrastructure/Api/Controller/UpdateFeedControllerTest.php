@@ -50,8 +50,12 @@ final class UpdateFeedControllerTest extends ApiTestCase
 
         self::assertResponseStatusCodeSame(200);
 
+        $content = $this->client->getResponse()->getContent();
+
+        self::assertNotFalse($content);
+
         $response = json_decode(
-            $this->client->getResponse()->getContent(),
+            $content,
             true,
             512,
             JSON_THROW_ON_ERROR

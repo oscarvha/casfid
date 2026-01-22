@@ -8,12 +8,19 @@ final class UpdateFeedRequest
 {
     #[Assert\NotBlank]
     #[Assert\Length(max: 255)]
-    public string $title;
+    public string $title = '';
 
     #[Assert\NotBlank]
     #[Assert\Url(requireTld: false)]
-    public string $url;
+    public string $url = '';
 
+    /**
+     * @param array{
+     *     source?: string,
+     *     title?: string,
+     *     url?: string
+     * } $data
+     */
     public static function fromRequest(array $data): self
     {
         $self = new self();

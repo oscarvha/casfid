@@ -4,9 +4,13 @@ namespace App\Tests\NewsHeadlines\Infrastructure\Api\Controller;
 
 use App\Tests\Shared\Infrastructure\Api\ApiTestCase;
 use Doctrine\DBAL\Exception;
+use JsonException;
 
 final class CreateFeedControllerTest extends ApiTestCase
 {
+    /**
+     * @throws JsonException
+     */
     public function test_it_creates_a_feed_successfully(): void
     {
         $this->client->request(
@@ -27,8 +31,12 @@ final class CreateFeedControllerTest extends ApiTestCase
 
         self::assertResponseStatusCodeSame(201);
 
+        $content = $this->client->getResponse()->getContent();
+
+        self::assertNotFalse($content);
+
         $response = json_decode(
-            $this->client->getResponse()->getContent(),
+            $content,
             true,
             512,
             JSON_THROW_ON_ERROR
@@ -46,7 +54,7 @@ final class CreateFeedControllerTest extends ApiTestCase
 
 
     /**
-     * @throws \JsonException
+     * @throws JsonException
      */
     public function test_it_returns_400_when_payload_is_invalid(): void
     {
@@ -68,8 +76,12 @@ final class CreateFeedControllerTest extends ApiTestCase
 
         self::assertResponseStatusCodeSame(400);
 
+        $content = $this->client->getResponse()->getContent();
+
+        self::assertNotFalse($content);
+
         $response = json_decode(
-            $this->client->getResponse()->getContent(),
+            $content,
             true,
             512,
             JSON_THROW_ON_ERROR
@@ -80,7 +92,7 @@ final class CreateFeedControllerTest extends ApiTestCase
     }
 
     /**
-     * @throws \JsonException
+     * @throws JsonException
      * @throws Exception
      */
     public function test_it_returns_409_when_feed_already_exists_in_source(): void
@@ -123,8 +135,12 @@ final class CreateFeedControllerTest extends ApiTestCase
 
         self::assertResponseStatusCodeSame(409);
 
+        $content = $this->client->getResponse()->getContent();
+
+        self::assertNotFalse($content);
+
         $response = json_decode(
-            $this->client->getResponse()->getContent(),
+            $content,
             true,
             512,
             JSON_THROW_ON_ERROR
@@ -134,7 +150,7 @@ final class CreateFeedControllerTest extends ApiTestCase
     }
 
     /**
-     * @throws \JsonException
+     * @throws JsonException
      */
     public function test_it_returns_401_without_token(): void
     {

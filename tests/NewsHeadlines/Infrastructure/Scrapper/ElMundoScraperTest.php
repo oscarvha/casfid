@@ -3,6 +3,7 @@
 namespace App\Tests\NewsHeadlines\Infrastructure\Scrapper;
 
 use App\NewsHeadlines\Domain\Exception\NewsScrapingFailed;
+use App\NewsHeadlines\Domain\Model\NewsHeadline;
 use App\NewsHeadlines\Domain\Port\NewsHeadlineIdGenerator;
 use App\NewsHeadlines\Domain\ValueObject\NewsHeadlineId;
 use App\NewsHeadlines\Infrastructure\Scrapper\ElMundoScraper;
@@ -48,8 +49,7 @@ final class ElMundoScraperTest extends TestCase
         $collection = $scraper->scrapeTopHeadlines();
         $items = iterator_to_array($collection);
 
-        $this->assertIsArray($items);
-        $this->assertNotEmpty($items);
+        $this->assertCount(10, $items);
     }
 
     public function test_it_throws_domain_exception_on_http_failure(): void
