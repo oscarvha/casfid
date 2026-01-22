@@ -123,10 +123,33 @@ final class DoctrineNewsHeadlineRepository implements NewsHeadlineRepository
         );
     }
 
+    /**
+     * @param NewsHeadline $headline
+     * @return void
+     */
     public function save(NewsHeadline $headline): void
     {
         $this->entityManager->persist($headline);
         $this->entityManager->flush();
+    }
+
+
+    /**
+     * @param NewsHeadline $headline
+     * @return void
+     */
+    public function update(NewsHeadline $headline): void
+    {
+        $this->entityManager->createQueryBuilder()
+            ->update(NewsHeadline::class, 'n')
+            ->set('n.title', ':title')
+            ->set('n.url', ':url')
+            ->where('n.id = :id')
+            ->setParameter('id', $headline->id())
+            ->setParameter('title', $headline->title())
+            ->setParameter('url', $headline->url())
+            ->getQuery()
+            ->execute();
     }
 
     /**

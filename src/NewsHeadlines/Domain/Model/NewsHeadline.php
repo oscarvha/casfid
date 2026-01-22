@@ -12,7 +12,7 @@ use DateTimeImmutable;
 /**
  *
  */
-final readonly class NewsHeadline
+final class NewsHeadline
 {
     /**
      * @param NewsHeadlineId $id
@@ -25,14 +25,14 @@ final readonly class NewsHeadline
      * @param DateTimeImmutable $createdAt
      */
     private function __construct(
-        private NewsHeadlineId             $id,
-        private NewsHeadlineSource         $source,
-        private NewsHeadlineTitle          $title,
-        private NewsHeadlineUrl            $url,
-        private NewsHeadlineOrigin         $origin,
-        private int                        $position,
-        private DateTimeImmutable          $scrapedAt,
-        private DateTimeImmutable          $createdAt
+        private readonly NewsHeadlineId     $id,
+        private readonly NewsHeadlineSource $source,
+        private NewsHeadlineTitle           $title,
+        private NewsHeadlineUrl             $url,
+        private readonly NewsHeadlineOrigin $origin,
+        private readonly int                $position,
+        private readonly DateTimeImmutable  $scrapedAt,
+        private readonly DateTimeImmutable $createdAt
     ) {}
 
     /**
@@ -97,6 +97,12 @@ final readonly class NewsHeadline
     public function createdAt(): DateTimeImmutable
     {
         return $this->createdAt;
+    }
+
+    public function update(NewsHeadlineTitle $title, NewsHeadlineUrl $headLineUrl): void
+    {
+        $this->title = $title;
+        $this->url = $headLineUrl;
     }
 
     /**

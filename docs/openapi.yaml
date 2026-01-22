@@ -55,6 +55,7 @@ paths:
                                     message:
                                         type: string
                                         example: Authentication required
+
     /api/feeds:
         get:
             summary: Get news feeds
@@ -62,92 +63,67 @@ paths:
                 - Feeds
             description: Returns a paginated list of news feeds using cursor-based pagination.
             security:
-                -   ApiTokenAuth: [ ]
+                - ApiTokenAuth: []
             parameters:
-                -   name: limit
-                    in: query
-                    required: false
-                    description: Maximum number of items to return
-                    schema:
-                        type: integer
-                        minimum: 1
-                        maximum: 50
-                        default: 2
-                        example: 10
-                -   name: cursor
-                    in: query
-                    required: false
-                    description: Cursor for pagination (UUID of the last item from previous page)
-                    schema:
-                        type: string
-                        format: uuid
-                        example: bf6673b6-fc1a-4308-8d68-697e5e379191
+                - name: limit
+                  in: query
+                  required: false
+                  schema:
+                      type: integer
+                      minimum: 1
+                      maximum: 50
+                      default: 2
+                - name: cursor
+                  in: query
+                  required: false
+                  schema:
+                      type: string
             responses:
                 '200':
                     description: Feeds retrieved successfully
-                    content:
-                        application/json:
-                            schema:
-                                type: object
-                                properties:
-                                    items:
-                                        type: array
-                                        items:
-                                            type: object
-                                            properties:
-                                                id:
-                                                    type: string
-                                                    format: uuid
-                                                    example: bf6673b6-fc1a-4308-8d68-697e5e379191
-                                                source:
-                                                    type: string
-                                                    example: el_mundo
-                                                title:
-                                                    type: string
-                                                    example: Some title
-                                                url:
-                                                    type: string
-                                                    format: uri
-                                                    example: https://example.com
-                                                position:
-                                                    type: integer
-                                                    example: 1
-                                                scrapedAt:
-                                                    type: string
-                                                    format: date-time
-                                                    example: 2026-01-20T12:00:00+00:00
-                                    nextCursor:
-                                        type: string
-                                        format: string
-                                        nullable: true
-                                        example: a3c1c5b2-9f4e-4a1f-8c92-4b4c6c3e2d11
                 '400':
                     description: Invalid request parameters
-                    content:
-                        application/json:
-                            schema:
-                                type: object
-                                properties:
-                                    error:
-                                        type: string
-                                        example: Bad Request
-                                    details:
-                                        type: array
-                                        items:
-                                            type: string
-                                        example:
-                                            - "limit: This value should be positive."
-                                            - "cursor: This is not a valid UUID."
                 '401':
                     description: Unauthorized
-                    content:
-                        application/json:
-                            schema:
-                                type: object
-                                properties:
-                                    error:
-                                        type: string
-                                        example: Unauthorized
+
+        post:
+            summary: Create a news feed
+            tags:
+                - Feeds
+            description: Creates a new news feed manually via API.
+            security:
+                - ApiTokenAuth: []
+            requestBody:
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            type: object
+                            required:
+                                - source
+                                - title
+                                - url
+                            properties:
+                                source:
+                                    type: string
+                                    example: el_mundo
+                                title:
+                                    type: string
+                                    example: Test headline created via API
+                                url:
+                                    type: string
+                                    format: uri
+                                    example: https://www.elmundo.es/test/api-headline.html
+            responses:
+                '201':
+                    description: Feed created successfully
+                '400':
+                    description: Invalid request
+                '401':
+                    description: Unauthorized
+                '409':
+                    description: URL already exists for the same source
+
     /api/feeds/{id}:
         get:
             summary: Get a single news feed by ID
@@ -155,81 +131,63 @@ paths:
                 - Feeds
             description: Returns a single news feed item by its UUID.
             security:
-                -   ApiTokenAuth: [ ]
+                - ApiTokenAuth: []
             parameters:
-                -   name: id
-                    in: path
-                    required: true
-                    description: UUID v4 of the news feed
-                    schema:
-                        type: string
-                        format: uuid
-                        example: bf6673b6-fc1a-4308-8d68-697e5e379191
+                - name: id
+                  in: path
+                  required: true
+                  schema:
+                      type: string
+                      format: uuid
             responses:
                 '200':
                     description: Feed retrieved successfully
-                    content:
-                        application/json:
-                            schema:
-                                type: object
-                                properties:
-                                    id:
-                                        type: string
-                                        format: uuid
-                                    source:
-                                        type: string
-                                        example: el_mundo
-                                    title:
-                                        type: string
-                                        example: Some title
-                                    url:
-                                        type: string
-                                        format: uri
-                                        example: https://example.com
-                                    position:
-                                        type: integer
-                                        example: 1
-                                    scrapedAt:
-                                        type: string
-                                        format: date-time
-                                        example: 2026-01-20T12:00:00+00:00
-                                    createdAt:
-                                        type: string
-                                        format: date-time
-                                        example: 2026-01-20T12:05:00+00:00
                 '400':
                     description: Invalid ID
-                    content:
-                        application/json:
-                            schema:
-                                type: object
-                                properties:
-                                    error:
-                                        type: string
-                                        example: Bad Request
-                                    details:
-                                        type: array
-                                        items:
-                                            type: string
-                                        example:
-                                            - "id: This is not a valid UUID."
                 '401':
                     description: Unauthorized
-                    content:
-                        application/json:
-                            schema:
-                                type: object
-                                properties:
-                                    error:
-                                        type: string
-                                        example: Unauthorized
                 '404':
                     description: Feed not found
-                    content:
-                        application/json:
-                            schema:
-                                type: object
-                                properties:
-                                    error:
-                                        type: string
-                                        example: Not Found
+
+        put:
+            summary: Update a news feed
+            tags:
+                - Feeds
+            description: Updates title and URL of an existing news feed.
+            security:
+                - ApiTokenAuth: []
+            parameters:
+                - name: id
+                  in: path
+                  required: true
+                  schema:
+                      type: string
+                      format: uuid
+            requestBody:
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            type: object
+                            required:
+                                - title
+                                - url
+                            properties:
+                                title:
+                                    type: string
+                                    example: Updated title
+                                url:
+                                    type: string
+                                    format: uri
+                                    example: https://www.elmundo.es/updated-url.html
+            responses:
+                '200':
+                    description: Feed updated successfully
+                '400':
+                    description: Invalid request
+                '401':
+                    description: Unauthorized
+                '404':
+                    description: Feed not found
+                '409':
+                    description: URL already exists for the same source

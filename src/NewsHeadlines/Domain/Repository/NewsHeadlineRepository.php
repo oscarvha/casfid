@@ -35,6 +35,12 @@ interface NewsHeadlineRepository
     public function save(NewsHeadline $headline): void;
 
     /**
+     * @param NewsHeadline $headline
+     * @return void
+     */
+    public function update(NewsHeadline $headline): void;
+
+    /**
      * @param string $source
      * @param DateTimeImmutable $createdAt
      * @return int
