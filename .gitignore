@@ -23,3 +23,7 @@
 ### IDEA CONFIG
 .idea/
 .editorconfig
+
+###> phpstan/phpstan ###
+phpstan.neon
+###< phpstan/phpstan ###

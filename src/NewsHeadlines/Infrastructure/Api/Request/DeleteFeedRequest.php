@@ -4,8 +4,7 @@ namespace App\NewsHeadlines\Infrastructure\Api\Request;
 
 use Symfony\Component\Validator\Constraints as Assert;
 
-
-class GetFeedByIdRequest
+final class DeleteFeedRequest
 {
     #[Assert\NotBlank]
     #[Assert\Uuid(versions: Assert\Uuid::V4_RANDOM)]
@@ -18,5 +17,4 @@ class GetFeedByIdRequest
 
         return $self;
     }
-
 }

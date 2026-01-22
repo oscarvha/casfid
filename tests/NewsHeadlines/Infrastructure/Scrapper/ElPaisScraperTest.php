@@ -52,8 +52,7 @@ final class ElPaisScraperTest extends TestCase
 
         $items = iterator_to_array($collection);
 
-        $this->assertIsArray($items);
-        $this->assertNotEmpty($items);
+        $this->assertCount(10, $items);
     }
 
     public function test_it_throws_domain_exception_on_http_failure(): void

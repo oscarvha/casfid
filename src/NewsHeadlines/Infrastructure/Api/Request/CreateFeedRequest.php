@@ -6,16 +6,22 @@ use Symfony\Component\Validator\Constraints as Assert;
 final class CreateFeedRequest
 {
     #[Assert\NotBlank]
-    public string $source;
+    public string $source = '';
 
     #[Assert\NotBlank]
-    public string $title;
+    public string $title = '';
 
     #[Assert\NotBlank]
     #[Assert\Url(requireTld: true)]
+    public string $url = '';
 
-    public string $url;
-
+    /**
+     * @param array{
+     *     source?: string,
+     *     title?: string,
+     *     url?: string
+     * } $data
+     */
     public static function fromRequest(array $data): self
     {
         $self = new self();

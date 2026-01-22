@@ -9,9 +9,12 @@ use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 
 abstract class ApiTestCase extends WebTestCase
 {
-    protected EntityManagerInterface $entityManager;
-    protected KernelBrowser $client;
+    protected ?EntityManagerInterface $entityManager = null;
+    protected ?KernelBrowser $client = null;
 
+    /**
+     * @return void
+     */
     protected function setUp(): void
     {
         $this->client = static::createClient();
@@ -22,8 +25,25 @@ abstract class ApiTestCase extends WebTestCase
         $this->createSchema();
     }
 
+    /**
+     * @return void
+     */
+    protected function tearDown(): void
+    {
+        $this->entityManager?->close();
+
+        parent::tearDown();
+    }
+
+    /**
+     * @return void
+     */
     private function createSchema(): void
     {
+        if ($this->entityManager === null) {
+            return;
+        }
+
         $metadata = $this->entityManager
             ->getMetadataFactory()
             ->getAllMetadata();

@@ -15,7 +15,7 @@ use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
 class DoctrineRepositoryTestCase extends KernelTestCase
 {
-    protected EntityManagerInterface $entityManager;
+    protected ?EntityManagerInterface $entityManager = null;
 
     protected function setUp(): void
     {
@@ -29,9 +29,13 @@ class DoctrineRepositoryTestCase extends KernelTestCase
         $schemaTool->createSchema($metadata);
     }
 
+    /**
+     * @return void
+     */
     protected function tearDown(): void
     {
-        $this->entityManager->close();
+        $this->entityManager?->close();
+
         parent::tearDown();
     }
 
