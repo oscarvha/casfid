@@ -7,26 +7,21 @@ use App\NewsHeadlines\Domain\Exception\NewsScrapingFailed;
 use App\NewsHeadlines\Domain\Model\NewsHeadline;
 use App\NewsHeadlines\Domain\Port\NewsHeadlineIdGenerator;
 use App\NewsHeadlines\Domain\Scrapper\NewsScraper;
-use App\NewsHeadlines\Domain\ValueObject\NewsHeadlineId;
 use App\NewsHeadlines\Domain\ValueObject\NewsHeadlineOrigin;
 use App\NewsHeadlines\Domain\ValueObject\NewsHeadlineSource;
 use App\NewsHeadlines\Domain\ValueObject\NewsHeadlineTitle;
 use App\NewsHeadlines\Domain\ValueObject\NewsHeadlineUrl;
+use DOMElement;
 use Symfony\Component\DomCrawler\Crawler;
-use Symfony\Component\HttpClient\HttpClient;
-use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
-use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
-use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
-use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 final class ElMundoScraper implements NewsScraper
 {
-    private const HEADLINE_SELECTOR = 'div.ue-l-cg__body:nth-of-type(2) article a > h2.ue-c-cover-content__headline';
+    private const HEADLINE_SELECTOR = 'div.ue-l-cg__body';
 
     public function __construct(
         private readonly HttpClientInterface $client,
-        private NewsHeadlineIdGenerator $idGenerator
+        private readonly NewsHeadlineIdGenerator $idGenerator
     ) {}
 
     /**
@@ -47,7 +42,7 @@ final class ElMundoScraper implements NewsScraper
             $html = $response->getContent();
 
             $crawler = new Crawler($html);
-            $blocks = $crawler->filter('div.ue-l-cg__body');
+            $blocks = $crawler->filter(self::HEADLINE_SELECTOR);
 
             if ($blocks->count() < 2) {
                 return NewsHeadlineCollection::fromArray([]);
@@ -65,6 +60,11 @@ final class ElMundoScraper implements NewsScraper
 
                     $title = trim($headlineNode->textContent);
                     $a = $headlineNode->parentNode;
+
+                    if (!$a instanceof DOMElement) {
+                        continue;
+                    }
+
                     $url = $a->getAttribute('href');
 
                     if ($title === '' || $url === '') {

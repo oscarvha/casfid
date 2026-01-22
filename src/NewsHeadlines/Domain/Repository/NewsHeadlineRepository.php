@@ -35,6 +35,12 @@ interface NewsHeadlineRepository
     public function save(NewsHeadline $headline): void;
 
     /**
+     * @param NewsHeadline $headline
+     * @return void
+     */
+    public function update(NewsHeadline $headline): void;
+
+    /**
      * @param string $source
      * @param DateTimeImmutable $createdAt
      * @return int
@@ -47,4 +53,10 @@ interface NewsHeadlineRepository
      * @return bool
      */
     public function existByUrlInSource(string $url, string $source): bool;
+
+    /**
+     * @param string $id
+     * @return void
+     */
+    public function deleteById(string $id): void;
 }

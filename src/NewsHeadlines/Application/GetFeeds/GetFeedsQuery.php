@@ -7,6 +7,8 @@ use App\NewsHeadlines\Application\GetFeeds\Dto\FeedResponseDto;
 use App\NewsHeadlines\Application\GetFeeds\Exception\InvalidCursorException;
 use App\NewsHeadlines\Domain\Repository\NewsHeadlineRepository;
 use DateTimeImmutable;
+use Exception;
+use JsonException;
 
 final class GetFeedsQuery
 {
@@ -20,8 +22,8 @@ final class GetFeedsQuery
      * @param int $limit
      * @param string|null $cursor
      * @return FeedResponseDto
+     * @throws JsonException
      * @throws Exception
-     * @throws \JsonException
      */
     public function execute(int $limit, ?string $cursor) : FeedResponseDto
     {
@@ -53,10 +55,11 @@ final class GetFeedsQuery
             $cursorId
         );
 
-        $dtos = array_map(
+        $dtos = array_values(array_map(
             static fn ($item) => FeedItemDto::fromDomain($item),
             iterator_to_array($items)
-        );
+        ));
+
 
         $nextCursor = null;
 

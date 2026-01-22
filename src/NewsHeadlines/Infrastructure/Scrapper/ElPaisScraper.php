@@ -12,6 +12,7 @@ use App\NewsHeadlines\Domain\ValueObject\NewsHeadlineOrigin;
 use App\NewsHeadlines\Domain\ValueObject\NewsHeadlineSource;
 use App\NewsHeadlines\Domain\ValueObject\NewsHeadlineTitle;
 use App\NewsHeadlines\Domain\ValueObject\NewsHeadlineUrl;
+use DOMElement;
 use Symfony\Component\DomCrawler\Crawler;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
@@ -51,6 +52,11 @@ final class ElPaisScraper implements NewsScraper
                 }
 
                 $title = trim($a->textContent);
+
+                if (!$a instanceof DOMElement) {
+                    continue;
+                }
+
                 $url = $a->getAttribute('href');
 
                 if ($title === '' || $url === '') {

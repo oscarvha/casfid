@@ -3,16 +3,15 @@
 namespace App\NewsHeadlines\Infrastructure\Api\Request;
 
 use Symfony\Component\Validator\Constraints as Assert;
-final class CreateFeedRequest
+
+final class UpdateFeedRequest
 {
     #[Assert\NotBlank]
-    public string $source = '';
-
-    #[Assert\NotBlank]
+    #[Assert\Length(max: 255)]
     public string $title = '';
 
     #[Assert\NotBlank]
-    #[Assert\Url(requireTld: true)]
+    #[Assert\Url(requireTld: false)]
     public string $url = '';
 
     /**
@@ -25,7 +24,6 @@ final class CreateFeedRequest
     public static function fromRequest(array $data): self
     {
         $self = new self();
-        $self->source = $data['source'] ?? '';
         $self->title = $data['title'] ?? '';
         $self->url = $data['url'] ?? '';
 

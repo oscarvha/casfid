@@ -69,7 +69,7 @@ final class ApiTokenAuthenticator extends AbstractAuthenticator
     /**
      * @throws JsonException
      */
-    public function onAuthenticationFailure(Request $request, AuthenticationException $exception): ?Response
+    public function onAuthenticationFailure(Request $request, AuthenticationException $exception): Response
     {
         return new Response(
             json_encode([
