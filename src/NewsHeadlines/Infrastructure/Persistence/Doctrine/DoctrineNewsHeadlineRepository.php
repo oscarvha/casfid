@@ -122,4 +122,45 @@ final class DoctrineNewsHeadlineRepository implements NewsHeadlineRepository
             $row['createdAt']
         );
     }
+
+    public function save(NewsHeadline $headline): void
+    {
+        $this->entityManager->persist($headline);
+        $this->entityManager->flush();
+    }
+
+    /**
+     * @param string $source
+     * @param DateTimeImmutable $createdAt
+     * @return int
+     */
+    public function nextPositionForSourceAndDay(string $source, DateTimeImmutable $createdAt): int
+    {
+        $startOfDay = $createdAt->setTime(0, 0, 0);
+        $endOfDay = $createdAt->setTime(23, 59, 59);
+
+        $qb = $this->entityManager
+            ->createQueryBuilder()
+            ->select('MAX(n.position) as maxPosition')
+            ->from(NewsHeadline::class, 'n')
+            ->where('n.source = :source')
+            ->andWhere('n.createdAt BETWEEN :startOfDay AND :endOfDay')
+            ->setParameter('source', $source)
+            ->setParameter('startOfDay', $startOfDay)
+            ->setParameter('endOfDay', $endOfDay);
+
+        $result = $qb->getQuery()->getSingleScalarResult();
+
+        return ($result !== null ? (int)$result : 0) + 1;
+    }
+
+    public function existByUrlInSource(string $url, string $source): bool
+    {
+        $count = $this->repository->count([
+            'url' => $url,
+            'source' => $source,
+        ]);
+
+        return $count > 0;
+    }
 }

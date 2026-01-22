@@ -35,7 +35,7 @@ class DoctrineRepositoryTestCase extends KernelTestCase
         parent::tearDown();
     }
 
-    protected function headline(string $url): NewsHeadline
+    protected function headline(string $url,int $position = 1, ?DateTimeImmutable $createdAt = null): NewsHeadline
     {
         return NewsHeadline::create(
             NewsHeadlineId::fromString(uniqid('test-', true)),
@@ -43,8 +43,9 @@ class DoctrineRepositoryTestCase extends KernelTestCase
             NewsHeadlineTitle::fromString('Test headline'),
             NewsHeadlineUrl::fromString($url),
             NewsHeadlineOrigin::fromString('scraping'),
-            1,
-            new DateTimeImmutable()
+            $position,
+            new DateTimeImmutable(),
+            $createdAt ?? new DateTimeImmutable()
         );
     }
 }

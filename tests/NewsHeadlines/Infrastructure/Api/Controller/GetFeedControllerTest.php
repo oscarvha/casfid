@@ -5,7 +5,7 @@ namespace App\Tests\NewsHeadlines\Infrastructure\Api\Controller;
 use App\Tests\Shared\Infrastructure\Api\ApiTestCase;
 use Exception;
 
-class GetFeedControllerTest extends ApiTestCase
+final class GetFeedControllerTest extends ApiTestCase
 {
     public function test_it_returns_401_without_token(): void
     {

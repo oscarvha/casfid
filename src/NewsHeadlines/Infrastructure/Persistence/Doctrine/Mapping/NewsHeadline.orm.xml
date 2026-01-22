@@ -10,6 +10,14 @@
         name="App\NewsHeadlines\Domain\Model\NewsHeadline"
         table="news_headlines"
     >
+
+        <unique-constraints>
+            <unique-constraint
+                name="uniq_news_headlines_source_url"
+                columns="source,url"
+            />
+        </unique-constraints>
+
         <id name="id" type="string" length="36" />
         <field name="source" length="50" />
         <field name="title"  length="255" />

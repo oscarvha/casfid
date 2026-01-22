@@ -56,7 +56,7 @@ final readonly class NewsHeadlineSource
 
         if (!in_array($normalized, self::allowed(), true)) {
             throw new InvalidNewsHeadlineSource(
-                sprintf('Invalid news source "%s"', $value)
+                sprintf('Invalid news source "%s" allowed values "%s" ', $value, implode(', ', self::allowed()))
             );
         }
 

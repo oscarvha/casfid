@@ -2,8 +2,6 @@
 
 namespace App\NewsHeadlines\Infrastructure\Api\Controller;
 
-use App\NewsHeadlines\Application\GetFeeds\Dto\FeedItemDto;
-use App\NewsHeadlines\Application\GetFeeds\Dto\FeedResponseDto;
 use App\NewsHeadlines\Application\GetFeeds\Exception\InvalidCursorException;
 use App\NewsHeadlines\Application\GetFeeds\GetFeedsQuery;
 use App\NewsHeadlines\Infrastructure\Api\Request\GetFeedsRequest;
@@ -11,7 +9,6 @@ use Exception;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 

@@ -27,4 +27,24 @@ interface NewsHeadlineRepository
      * @return NewsHeadline|null
      */
     public function findById(string $id): ?NewsHeadline;
+
+    /**
+     * @param NewsHeadline $headline
+     * @return void
+     */
+    public function save(NewsHeadline $headline): void;
+
+    /**
+     * @param string $source
+     * @param DateTimeImmutable $createdAt
+     * @return int
+     */
+    public function nextPositionForSourceAndDay(string $source, DateTimeImmutable $createdAt): int;
+
+    /**
+     * @param string $url
+     * @param string $source
+     * @return bool
+     */
+    public function existByUrlInSource(string $url, string $source): bool;
 }
