@@ -35,7 +35,7 @@ final class DoctrineNewsHeadlineRepository implements NewsHeadlineRepository
     {
         foreach ($collection as $headline) {
 
-            if ($this->existsByUrl($headline->url())) {
+            if ($this->existByUrlInSource($headline->url(), $headline->source())) {
                 continue;
             }
 
