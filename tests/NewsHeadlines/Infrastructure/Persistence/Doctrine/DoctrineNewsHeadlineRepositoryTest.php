@@ -257,4 +257,90 @@ final class DoctrineNewsHeadlineRepositoryTest extends DoctrineRepositoryTestCas
     }
 
 
+    public function test_it_iterates_all_results_using_cursor_pagination(): void
+    {
+        $repository = self::getContainer()->get(NewsHeadlineRepository::class);
+
+        $baseDate = new DateTimeImmutable('2026-01-21 10:00:00');
+
+        $headlines = [
+            $this->headline(
+                'https://elpais.com/1',
+                position: 1,
+                createdAt: $baseDate->modify('+1 minute')
+            ),
+            $this->headline(
+                'https://elpais.com/2',
+                position: 2,
+                createdAt: $baseDate->modify('+2 minutes')
+            ),
+            $this->headline(
+                'https://elpais.com/3',
+                position: 3,
+                createdAt: $baseDate->modify('+3 minutes')
+            ),
+            $this->headline(
+                'https://elpais.com/4',
+                position: 4,
+                createdAt: $baseDate->modify('+4 minutes')
+            ),
+            $this->headline(
+                'https://elpais.com/5',
+                position: 5,
+                createdAt: $baseDate->modify('+5 minutes')
+            ),
+        ];
+
+        foreach ($headlines as $headline) {
+            $repository->save($headline);
+        }
+
+        $limit = 1;
+        $cursorDate = null;
+        $cursorId = null;
+
+        $fetchedIds = [];
+
+        do {
+            $collection = $repository->findPaginated(
+                $limit,
+                $cursorDate,
+                $cursorId
+            );
+
+            $items = iterator_to_array($collection);
+
+            if ($items === []) {
+                break;
+            }
+
+            self::assertCount(1, $items);
+
+            $last = $items[0];
+
+            $fetchedIds[] = (string) $last->id();
+
+            $cursorDate = $last->createdAt();
+            $cursorId = (string) $last->id();
+
+        } while (true);
+
+        self::assertCount(5, $fetchedIds);
+
+        // EXPECTED ORDER: createdAt DESC, id DESC
+        usort(
+            $headlines,
+            static fn (NewsHeadline $a, NewsHeadline $b) =>
+                [$b->createdAt(), (string) $b->id()]
+                <=>
+                [$a->createdAt(), (string) $a->id()]
+        );
+
+        $expectedIds = array_map(
+            static fn (NewsHeadline $h) => (string) $h->id(),
+            $headlines
+        );
+
+        self::assertSame($expectedIds, $fetchedIds);
+    }
 }

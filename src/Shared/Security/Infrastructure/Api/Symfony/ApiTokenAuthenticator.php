@@ -55,6 +55,7 @@ final class ApiTokenAuthenticator extends AbstractAuthenticator
                         return ['ROLE_API'];
                     }
 
+                    #[\Deprecated]
                     public function eraseCredentials(): void {}
                 }
             )

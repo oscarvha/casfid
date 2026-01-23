@@ -8,7 +8,7 @@ final class GetFeedsRequest
 {
     #[Assert\Positive]
     #[Assert\LessThanOrEqual(50)]
-    public int $limit = 2;
+    public int $limit = 4;
 
     public ?string $cursor = null;
 
