@@ -1,11 +1,39 @@
 # CASFID – Reto Técnico Backend (DailyTrends)
 
-¡Bienvenido/a al reto técnico de CASFID!
+## INSTALACIÓN Y EJECUCIÓN
 
-Este reto evalúa tus habilidades técnicas en Symfony, diseño limpio, scraping y trabajo con MongoDB/MySQL.  
-El proyecto se llama **DailyTrends** y actúa como un agregador de noticias de portada.
+1. Construir las imágenes de Docker:
+   $ docker compose build
 
----
+2. Renombrar y completar el fichero de entorno:
+
+   $ mv .env.example .env
+
+   Edita `/.env` y completa las variables necesarias (DB, Mongo, UID, UNAME, etc.).
+
+3. Levantar los contenedores en segundo plano:
+
+   $ docker compose up -d
+
+4. Instalar dependencias PHP dentro del contenedor (servicio `php`; si tu servicio se llama `app` sustituye `php` por `app`):
+
+   $ docker compose exec php composer install
+
+5. Ejecutar las migraciones (si usas Doctrine):
+
+   $ docker compose exec php bin/console doctrine:migrations:migrate --no-interaction
+
+6. Realizar un primer scraping para poblar la base de datos:
+
+   $ docker compose exec php bin/console app:news-headlines:fetch-today
+
+7. Documentación Swagger disponible en:
+
+   http://localhost:8891
+
+Notas:
+- Asegúrate de haber seleccionado y configurado la base de datos (MySQL o MongoDB) en `/.env` antes de ejecutar las migraciones y el primer scraping.
+- Si el servicio PHP tiene otro nombre en el `docker-compose.yml`, sustituye `php` por el nombre real del servicio en los comandos `docker compose exec`.
 
 ## Objetivo general
 
@@ -81,6 +109,20 @@ De esta forma compartirás los mismos permisos al utilizar Symfony CLI dentro de
 
 ---
 
+
+## 🛠️ Mejoras a implementar
+
+- [ ] Añadir más tests en la capa de aplicación
+- [ ] Eliminar el requerimiento de la variable `ScrapedAt`, ya que no tiene sentido en los casos manuales
+- [ ] Cambiar el uso de primitivos en los casos de uso por DTOs para facilitar la escalabilidad del proyecto
+
+## 🚀 Próximos pasos
+
+- [ ] Añadir filtros en la llamada `Get-Feeds`
+- [ ] Aumentar el rango del `scraped` para poder obtener la fecha de publicación
+- [ ] Añadir alarmas cuando alguno de los scrapers falle, para poder revisar cambios en el HTML y su estructura
+- [ ] Implementar rate limits a nivel de aplicación
+- [ ] Subir el nivel de PHPStan de 7 a 8
 
 ## 🧠 Decisiones de Diseño y Arquitectura - ES
 
@@ -401,4 +443,5 @@ The architectural goal of this project is to provide:
 - Explicit and documented design decisions
 
 Each architectural choice is intended to solve real project needs while avoiding over-engineering.
+
 
