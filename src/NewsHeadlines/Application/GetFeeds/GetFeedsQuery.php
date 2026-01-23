@@ -50,20 +50,25 @@ final class GetFeedsQuery
         }
 
         $items = $this->repository->findPaginated(
-            $limit,
+            $limit + 1,
             $cursorCreatedAt,
             $cursorId
         );
 
-        $dtos = array_values(array_map(
-            static fn ($item) => FeedItemDto::fromDomain($item),
-            iterator_to_array($items)
-        ));
+        $itemsArray = iterator_to_array($items);
 
+        $hasMore = count($itemsArray) > $limit;
+
+        $itemsArray = array_slice($itemsArray, 0, $limit);
+
+        $dtos = array_map(
+            static fn ($item) => FeedItemDto::fromDomain($item),
+            $itemsArray
+        );
 
         $nextCursor = null;
 
-        if (!empty($dtos)) {
+        if ($hasMore) {
             $last = end($dtos);
 
             $nextCursor = base64_encode(json_encode([
